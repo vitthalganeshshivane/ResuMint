@@ -39,4 +39,33 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profileImageUrl: user.profileImageUrl,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
 module.exports = { registerUser, loginUser, getUserProfile };
