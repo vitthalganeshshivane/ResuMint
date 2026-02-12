@@ -85,6 +85,19 @@ const createResume = async (req, res) => {
   }
 };
 
+const getUserResumes = async (req, res) => {
+  try {
+    const resumes = await Resume.find({ userId: req.user._id }).sort({
+      updatedAt: -1,
+    });
+    res.json(resumes);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create resume", error: error.message });
+  }
+};
+
 module.exports = {
   createResume,
   getUserResumes,

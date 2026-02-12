@@ -11,5 +11,6 @@ const {
 const router = express.Router();
 
 router.post("/", protect, createResume);
+router.get("/", protect, getUserResumes);
 
 module.exports = router;
