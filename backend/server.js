@@ -23,15 +23,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"), {
-    setHeaders: (res, path) => {
-      res.set("Access-Control-Allow-Origin", "http://localhost:5173");
-    },
-  }),
-);
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
