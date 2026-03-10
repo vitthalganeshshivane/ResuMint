@@ -23,6 +23,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 
+app.get("/welcome", (req, res) => {
+  res.send("Welcome to the MERN backend server of resume builder webapp");
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
