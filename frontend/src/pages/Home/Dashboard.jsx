@@ -25,29 +25,39 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAllResumes();
   }, []);
 
-  useEffect(() => {
-    console.log("ALL RESUMES 👉", allResumes);
-  }, [allResumes]);
-
   return (
     <DashboardLayout>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-7 pt-1 pb-6 px-4 md:px-0">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-5 pt-2 pb-6">
         <div
-          className="h-[300px] flex flex-col gap-5 items-center justify-center bg-white rounded-lg border border-purple-100 hover:border-purple-3 hover:bg-purple-50/5 cursor-pointer"
-          onClick={() => {
-            setOpenCreateModal(true);
+          className="h-[300px] flex flex-col gap-5 items-center justify-center cursor-pointer transition-all duration-300"
+          style={{
+            backgroundColor: "var(--color-cream-lifted)",
+            borderRadius: "24px",
+            border: "1.5px dashed var(--color-dust)",
           }}
+          onClick={() => setOpenCreateModal(true)}
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-purple-200/60 rounded-2xl">
-            <LuCirclePlus />
+          <div
+            className="w-12 h-12 flex items-center justify-center rounded-full"
+            style={{
+              backgroundColor: "var(--color-cream)",
+              color: "var(--color-signal-orange)",
+            }}
+          >
+            <LuCirclePlus size={22} />
           </div>
 
-          <h3 className="font-medium text-gray-800">Add New Resume</h3>
+          <h3
+            className="font-medium text-sm"
+            style={{ color: "var(--color-ink)" }}
+          >
+            Add New Resume
+          </h3>
         </div>
+
         {allResumes?.map((resume) => (
           <ResumeSummaryCard
             key={resume?._id}
@@ -65,13 +75,10 @@ const Dashboard = () => {
 
       <Modal
         isOpen={openCreateModal}
-        onClose={() => {
-          setOpenCreateModal(false);
-        }}
+        onClose={() => setOpenCreateModal(false)}
+        title="Create New Resume"
       >
-        <div>
-          <CreateResumeForm />
-        </div>
+        <CreateResumeForm />
       </Modal>
     </DashboardLayout>
   );

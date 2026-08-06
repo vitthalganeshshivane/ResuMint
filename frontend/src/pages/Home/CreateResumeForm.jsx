@@ -14,7 +14,7 @@ const CreateResumeForm = () => {
     e.preventDefault();
 
     if (!title) {
-      setError("Please resume title");
+      setError("Please enter a resume title");
       return;
     }
 
@@ -28,7 +28,6 @@ const CreateResumeForm = () => {
       if (response.data?._id) {
         navigate(`/resume/${response.data?._id}`);
       }
-      console.log("handleCreateForm");
     } catch (error) {
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
@@ -39,22 +38,34 @@ const CreateResumeForm = () => {
   };
 
   return (
-    <div className="w-[90vw] md:w-[70vh] p-7 flex flex-col justify-center">
-      <h3 className="text-lg font-semibold text-black">Create New Resume</h3>
-      <p className="text-xs text-slate-700 mt-[5px] mb-3">
+    <div className="w-[90vw] md:w-[420px] p-8 flex flex-col justify-center">
+      <h3
+        className="text-xl font-medium"
+        style={{ color: "var(--color-ink)", letterSpacing: "-0.01em" }}
+      >
+        Create New Resume
+      </h3>
+      <p
+        className="text-sm mt-1 mb-5"
+        style={{ color: "var(--color-slate)", fontWeight: 450 }}
+      >
         Give your resume a title to get started. You can edit all details later.
       </p>
 
-      <form onSubmit={handleCreateResume} action="">
+      <form onSubmit={handleCreateResume}>
         <Input
           value={title}
           onChange={({ target }) => setTitle(target.value)}
-          label={`Resume Title`}
-          placeholder={"Eg: Mike's Resume"}
-          type={`text`}
+          label="Resume Title"
+          placeholder="Eg: Mike's Resume"
+          type="text"
         />
 
-        {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+        {error && (
+          <p className="text-xs pb-2.5" style={{ color: "var(--color-signal-orange)" }}>
+            {error}
+          </p>
+        )}
 
         <button type="submit" className="btn-primary">
           Create Resume
