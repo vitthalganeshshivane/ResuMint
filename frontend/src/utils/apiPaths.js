@@ -18,6 +18,9 @@ export const API_PATHS = {
     UPDATE: (id) => `/api/resume/${id}`,
     DELETE: (id) => `/api/resume/${id}`,
     UPLOAD_IMAGES: (id) => `/api/resume/${id}/upload-images`,
+    QUICK_SKILL: "/api/resume/quick/skill",
+    QUICK_PROJECT: "/api/resume/quick/project",
+    QUICK_EXPERIENCE: "/api/resume/quick/experience",
   },
 
   IMAGE: {

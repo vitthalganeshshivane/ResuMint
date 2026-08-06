@@ -14,6 +14,10 @@ import {
   LuArrowLeft,
   LuCamera,
   LuLogOut,
+  LuPlus,
+  LuChevronDown,
+  LuChevronUp,
+  LuX,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -46,6 +50,13 @@ const ProfilePage = () => {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const [expandedSection, setExpandedSection] = useState(null);
+  const [quickAddLoading, setQuickAddLoading] = useState(false);
+
+  const [skillForm, setSkillForm] = useState({ name: "", progress: 60 });
+  const [projectForm, setProjectForm] = useState({ title: "", description: "", github: "", liveDemo: "" });
+  const [experienceForm, setExperienceForm] = useState({ company: "", role: "", startDate: "", endDate: "", description: "" });
 
   const handleLogout = () => {
     localStorage.clear();
@@ -150,28 +161,60 @@ const ProfilePage = () => {
     }
   };
 
-  const statCards = [
-    {
-      label: "Resumes",
-      value: stats?.totalResumes || 0,
-      icon: LuFileText,
-    },
-    {
-      label: "Skills",
-      value: stats?.totalSkills || 0,
-      icon: LuAward,
-    },
-    {
-      label: "Projects",
-      value: stats?.totalProjects || 0,
-      icon: LuFolderKanban,
-    },
-    {
-      label: "Experiences",
-      value: stats?.totalExperiences || 0,
-      icon: LuBriefcase,
-    },
-  ];
+  const toggleSection = (section) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
+  const handleQuickAddSkill = async (e) => {
+    e.preventDefault();
+    if (!skillForm.name.trim()) return;
+    setQuickAddLoading(true);
+    try {
+      await axiosInstance.post(API_PATHS.RESUME.QUICK_SKILL, skillForm);
+      toast.success("Skill added");
+      setSkillForm({ name: "", progress: 60 });
+      setExpandedSection(null);
+      fetchStats();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to add skill");
+    } finally {
+      setQuickAddLoading(false);
+    }
+  };
+
+  const handleQuickAddProject = async (e) => {
+    e.preventDefault();
+    if (!projectForm.title.trim()) return;
+    setQuickAddLoading(true);
+    try {
+      await axiosInstance.post(API_PATHS.RESUME.QUICK_PROJECT, projectForm);
+      toast.success("Project added");
+      setProjectForm({ title: "", description: "", github: "", liveDemo: "" });
+      setExpandedSection(null);
+      fetchStats();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to add project");
+    } finally {
+      setQuickAddLoading(false);
+    }
+  };
+
+  const handleQuickAddExperience = async (e) => {
+    e.preventDefault();
+    if (!experienceForm.company.trim() || !experienceForm.role.trim()) return;
+    setQuickAddLoading(true);
+    try {
+      await axiosInstance.post(API_PATHS.RESUME.QUICK_EXPERIENCE, experienceForm);
+      toast.success("Experience added");
+      setExperienceForm({ company: "", role: "", startDate: "", endDate: "", description: "" });
+      setExpandedSection(null);
+      fetchStats();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to add experience");
+    } finally {
+      setQuickAddLoading(false);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -271,37 +314,282 @@ const ProfilePage = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-          {statCards.map((stat) => (
+          {/* Resumes - no expand */}
+          <div
+            className="p-4 text-center"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "20px",
+              border: "1px solid var(--color-dust)",
+            }}
+          >
             <div
-              key={stat.label}
-              className="p-4 text-center"
-              style={{
-                backgroundColor: "var(--color-cream-lifted)",
-                borderRadius: "20px",
-                border: "1px solid var(--color-dust)",
-              }}
+              className="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}
             >
-              <div
-                className="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-full"
-                style={{
-                  backgroundColor: "var(--color-cream)",
-                  color: "var(--color-signal-orange)",
-                }}
-              >
-                <stat.icon size={18} />
-              </div>
-              <p
-                className="text-xl font-bold"
-                style={{ color: "var(--color-ink)" }}
-              >
-                {loading ? "-" : stat.value}
-              </p>
-              <p className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>
-                {stat.label}
-              </p>
+              <LuFileText size={18} />
             </div>
-          ))}
+            <p className="text-xl font-bold" style={{ color: "var(--color-ink)" }}>
+              {loading ? "-" : stats?.totalResumes || 0}
+            </p>
+            <p className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>Resumes</p>
+          </div>
+
+          {/* Skills - expandable */}
+          <button
+            onClick={() => toggleSection("skills")}
+            className="p-4 text-center cursor-pointer transition-all duration-200"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "20px",
+              border: expandedSection === "skills" ? "1.5px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
+            }}
+          >
+            <div
+              className="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}
+            >
+              <LuAward size={18} />
+            </div>
+            <p className="text-xl font-bold" style={{ color: "var(--color-ink)" }}>
+              {loading ? "-" : stats?.totalSkills || 0}
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>Skills</p>
+              {expandedSection === "skills" ? <LuChevronUp size={10} style={{ color: "var(--color-slate)" }} /> : <LuChevronDown size={10} style={{ color: "var(--color-slate)" }} />}
+            </div>
+          </button>
+
+          {/* Projects - expandable */}
+          <button
+            onClick={() => toggleSection("projects")}
+            className="p-4 text-center cursor-pointer transition-all duration-200"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "20px",
+              border: expandedSection === "projects" ? "1.5px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
+            }}
+          >
+            <div
+              className="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}
+            >
+              <LuFolderKanban size={18} />
+            </div>
+            <p className="text-xl font-bold" style={{ color: "var(--color-ink)" }}>
+              {loading ? "-" : stats?.totalProjects || 0}
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>Projects</p>
+              {expandedSection === "projects" ? <LuChevronUp size={10} style={{ color: "var(--color-slate)" }} /> : <LuChevronDown size={10} style={{ color: "var(--color-slate)" }} />}
+            </div>
+          </button>
+
+          {/* Experiences - expandable */}
+          <button
+            onClick={() => toggleSection("experiences")}
+            className="p-4 text-center cursor-pointer transition-all duration-200"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "20px",
+              border: expandedSection === "experiences" ? "1.5px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
+            }}
+          >
+            <div
+              className="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}
+            >
+              <LuBriefcase size={18} />
+            </div>
+            <p className="text-xl font-bold" style={{ color: "var(--color-ink)" }}>
+              {loading ? "-" : stats?.totalExperiences || 0}
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>Experiences</p>
+              {expandedSection === "experiences" ? <LuChevronUp size={10} style={{ color: "var(--color-slate)" }} /> : <LuChevronDown size={10} style={{ color: "var(--color-slate)" }} />}
+            </div>
+          </button>
         </div>
+
+        {/* Quick Add Forms */}
+        {expandedSection && (
+          <div
+            className="p-5 mb-5"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "24px",
+              border: "1.5px solid var(--color-signal-orange)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3
+                className="text-[14px] font-semibold"
+                style={{ color: "var(--color-ink)", letterSpacing: "-0.005em" }}
+              >
+                Quick Add {expandedSection === "skills" ? "Skill" : expandedSection === "projects" ? "Project" : "Experience"}
+              </h3>
+              <button
+                onClick={() => setExpandedSection(null)}
+                className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
+                style={{ backgroundColor: "var(--color-cream)", color: "var(--color-slate)" }}
+              >
+                <LuX size={12} />
+              </button>
+            </div>
+
+            {/* Skill Form */}
+            {expandedSection === "skills" && (
+              <form onSubmit={handleQuickAddSkill} className="flex flex-col gap-3">
+                <div>
+                  <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Skill Name</label>
+                  <input
+                    type="text"
+                    value={skillForm.name}
+                    onChange={(e) => setSkillForm({ ...skillForm, name: e.target.value })}
+                    className="form-input"
+                    placeholder="e.g. React.js, Python, Project Management"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>
+                    Proficiency ({Math.round(skillForm.progress / 20)}/5)
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="20"
+                    value={skillForm.progress}
+                    onChange={(e) => setSkillForm({ ...skillForm, progress: parseInt(e.target.value) })}
+                    className="w-full accent-[var(--color-signal-orange)]"
+                  />
+                </div>
+                <button type="submit" className="btn-small self-end" disabled={quickAddLoading}>
+                  <LuPlus size={14} />
+                  {quickAddLoading ? "Adding..." : "Add Skill"}
+                </button>
+              </form>
+            )}
+
+            {/* Project Form */}
+            {expandedSection === "projects" && (
+              <form onSubmit={handleQuickAddProject} className="flex flex-col gap-3">
+                <div>
+                  <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Project Title</label>
+                  <input
+                    type="text"
+                    value={projectForm.title}
+                    onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                    className="form-input"
+                    placeholder="e.g. Portfolio Website"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Description</label>
+                  <textarea
+                    value={projectForm.description}
+                    onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                    className="form-input"
+                    rows={2}
+                    placeholder="What did you build?"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>GitHub URL</label>
+                    <input
+                      type="url"
+                      value={projectForm.github}
+                      onChange={(e) => setProjectForm({ ...projectForm, github: e.target.value })}
+                      className="form-input"
+                      placeholder="https://github.com/..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Live Demo</label>
+                    <input
+                      type="url"
+                      value={projectForm.liveDemo}
+                      onChange={(e) => setProjectForm({ ...projectForm, liveDemo: e.target.value })}
+                      className="form-input"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+                <button type="submit" className="btn-small self-end" disabled={quickAddLoading}>
+                  <LuPlus size={14} />
+                  {quickAddLoading ? "Adding..." : "Add Project"}
+                </button>
+              </form>
+            )}
+
+            {/* Experience Form */}
+            {expandedSection === "experiences" && (
+              <form onSubmit={handleQuickAddExperience} className="flex flex-col gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Company</label>
+                    <input
+                      type="text"
+                      value={experienceForm.company}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, company: e.target.value })}
+                      className="form-input"
+                      placeholder="e.g. Google"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Role</label>
+                    <input
+                      type="text"
+                      value={experienceForm.role}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, role: e.target.value })}
+                      className="form-input"
+                      placeholder="e.g. Frontend Developer"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Start Date</label>
+                    <input
+                      type="month"
+                      value={experienceForm.startDate}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, startDate: e.target.value })}
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>End Date</label>
+                    <input
+                      type="month"
+                      value={experienceForm.endDate}
+                      onChange={(e) => setExperienceForm({ ...experienceForm, endDate: e.target.value })}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium mb-1 block" style={{ color: "var(--color-slate)" }}>Description</label>
+                  <textarea
+                    value={experienceForm.description}
+                    onChange={(e) => setExperienceForm({ ...experienceForm, description: e.target.value })}
+                    className="form-input"
+                    rows={2}
+                    placeholder="What did you do in this role?"
+                  />
+                </div>
+                <button type="submit" className="btn-small self-end" disabled={quickAddLoading}>
+                  <LuPlus size={14} />
+                  {quickAddLoading ? "Adding..." : "Add Experience"}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
         {/* Account Settings */}
         <div

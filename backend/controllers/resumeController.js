@@ -193,10 +193,89 @@ const deleteResume = async (req, res) => {
   }
 };
 
+async function getOrCreateRecentResume(userId) {
+  let resume = await Resume.findOne({ userId }).sort({ updatedAt: -1 });
+  if (!resume) {
+    resume = await Resume.create({
+      userId,
+      title: "My Resume",
+      profileInfo: { fullName: "", designation: "", summary: "" },
+      contactInfo: {},
+      workExperience: [],
+      education: [],
+      skills: [],
+      projects: [],
+      certifications: [],
+      languages: [],
+      interests: [],
+    });
+  }
+  return resume;
+}
+
+const quickAddSkill = async (req, res) => {
+  try {
+    const { name, progress } = req.body;
+    if (!name?.trim()) {
+      return res.status(400).json({ message: "Skill name is required" });
+    }
+    const resume = await getOrCreateRecentResume(req.user._id);
+    resume.skills.push({ name: name.trim(), progress: progress || 60 });
+    await resume.save();
+    res.status(200).json({ message: "Skill added", totalSkills: resume.skills.length });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add skill", error: error.message });
+  }
+};
+
+const quickAddProject = async (req, res) => {
+  try {
+    const { title, description, github, liveDemo } = req.body;
+    if (!title?.trim()) {
+      return res.status(400).json({ message: "Project title is required" });
+    }
+    const resume = await getOrCreateRecentResume(req.user._id);
+    resume.projects.push({
+      title: title.trim(),
+      description: description || "",
+      github: github || "",
+      liveDemo: liveDemo || "",
+    });
+    await resume.save();
+    res.status(200).json({ message: "Project added", totalProjects: resume.projects.length });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add project", error: error.message });
+  }
+};
+
+const quickAddExperience = async (req, res) => {
+  try {
+    const { company, role, startDate, endDate, description } = req.body;
+    if (!company?.trim() || !role?.trim()) {
+      return res.status(400).json({ message: "Company and role are required" });
+    }
+    const resume = await getOrCreateRecentResume(req.user._id);
+    resume.workExperience.push({
+      company: company.trim(),
+      role: role.trim(),
+      startDate: startDate || "",
+      endDate: endDate || "",
+      description: description || "",
+    });
+    await resume.save();
+    res.status(200).json({ message: "Experience added", totalExperiences: resume.workExperience.length });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add experience", error: error.message });
+  }
+};
+
 module.exports = {
   createResume,
   getUserResumes,
   getResumeById,
   updateResume,
   deleteResume,
+  quickAddSkill,
+  quickAddProject,
+  quickAddExperience,
 };

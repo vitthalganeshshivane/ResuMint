@@ -8,6 +8,9 @@ const {
   getResumeById,
   updateResume,
   deleteResume,
+  quickAddSkill,
+  quickAddProject,
+  quickAddExperience,
 } = require("../controllers/resumeController");
 const router = express.Router();
 
@@ -26,5 +29,9 @@ router.put(
 );
 
 router.delete("/:id", protect, deleteResume);
+
+router.post("/quick/skill", protect, quickAddSkill);
+router.post("/quick/project", protect, quickAddProject);
+router.post("/quick/experience", protect, quickAddExperience);
 
 module.exports = router;
