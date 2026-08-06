@@ -4,8 +4,8 @@ const RatingInput = ({
   value = 0,
   total = 5,
   onChange = () => {},
-  color = "#9125E6",
-  bgColor = "#E9D4FF",
+  color = "#141413",
+  bgColor = "#D1CDC7",
 }) => {
   const displayValue = Math.round((value / 100) * total);
 
@@ -25,7 +25,7 @@ const RatingInput = ({
             onClick={() => handleClick(index)}
             className="w-4 h-4 rounded transition-all"
             style={{ backgroundColor: isActive ? color : bgColor }}
-          ></div>
+          />
         );
       })}
     </div>
