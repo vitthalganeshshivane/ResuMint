@@ -13,19 +13,31 @@ const Modal = ({
 }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/40">
+    <div className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/40 backdrop-blur-sm">
       <div
-        className={`relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden`}
+        className="relative flex flex-col overflow-hidden animate-fade-in"
+        style={{
+          backgroundColor: "var(--color-cream-lifted)",
+          borderRadius: "40px",
+          boxShadow: "rgba(0, 0, 0, 0.25) 0px 70px 110px 0px",
+          maxWidth: "90vw",
+          maxHeight: "90vh",
+        }}
       >
         {!hideHeader && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h3 className="md:text-lg font-medium text-gray-900">{title}</h3>
+          <div
+            className="flex items-center justify-between px-6 py-4"
+            style={{ borderBottom: "1px solid var(--color-dust)" }}
+          >
+            <h3
+              className="text-lg font-medium"
+              style={{ color: "var(--color-ink)", letterSpacing: "-0.005em" }}
+            >
+              {title}
+            </h3>
 
             {showActionBtn && (
-              <button
-                className="btn-small-light mr-12"
-                onClick={() => onActionClick()}
-              >
+              <button className="btn-small mr-12" onClick={() => onActionClick()}>
                 {actionBtnIcon} {actionBtnText}
               </button>
             )}
@@ -34,7 +46,11 @@ const Modal = ({
 
         <button
           type="button"
-          className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center absolute top-3.5 right-3.5 "
+          className="flex justify-center items-center absolute top-4 right-5 w-8 h-8 rounded-full cursor-pointer transition-all duration-200"
+          style={{
+            backgroundColor: "var(--color-cream)",
+            color: "var(--color-slate)",
+          }}
           onClick={onClose}
         >
           <svg

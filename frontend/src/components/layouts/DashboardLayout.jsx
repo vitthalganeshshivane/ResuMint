@@ -1,15 +1,21 @@
-import React, { Children, useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../../context/userContext";
 import Navbar from "./Navbar";
 
-const DashboardLayout = ({ activeMenu, children }) => {
+const DashboardLayout = ({ children }) => {
   const { user } = useContext(UserContext);
 
   return (
-    <div>
-      <Navbar activeMenu={activeMenu} />
-
-      {user && <div className="container mx-auto pt-4 pb-4">{children}</div>}
+    <div
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: "var(--color-cream)" }}
+    >
+      <Navbar />
+      {user && (
+        <div className="container mx-auto max-w-5xl pt-2 pb-8 px-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
