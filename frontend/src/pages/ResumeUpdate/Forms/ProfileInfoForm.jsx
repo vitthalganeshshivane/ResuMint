@@ -4,12 +4,15 @@ import Input from "../../../components/inputs/Input";
 
 const ProfileInfoForm = ({ profileData, updateSection, onNext }) => {
   return (
-    <div className="px-5 pt-5">
-      <h2 className="text-lg font-semibold text-gray-900">
+    <div className="px-6 pt-6">
+      <h2
+        className="text-lg font-medium"
+        style={{ color: "var(--color-ink)", letterSpacing: "-0.005em" }}
+      >
         Personal Information
       </h2>
 
-      <div className="mt-4">
+      <div className="mt-5">
         <ProfilePhotoSelector
           image={profileData?.profileImg || profileData?.profilePreviewUrl}
           setImage={(value) => updateSection("profileImg", value)}
@@ -21,9 +24,9 @@ const ProfileInfoForm = ({ profileData, updateSection, onNext }) => {
           <Input
             value={profileData.fullName || ""}
             onChange={({ target }) => updateSection("fullName", target.value)}
-            label={"Full Name"}
-            placeholder={"John"}
-            type={"text"}
+            label="Full Name"
+            placeholder="John"
+            type="text"
           />
 
           <Input
@@ -31,25 +34,25 @@ const ProfileInfoForm = ({ profileData, updateSection, onNext }) => {
             onChange={({ target }) =>
               updateSection("designation", target.value)
             }
-            label={"Designation"}
-            placeholder={"UI Designer"}
-            type={"text"}
+            label="Designation"
+            placeholder="UI Designer"
+            type="text"
           />
 
-          <div className="col-span-2 mt-3">
-            <label className="text-xs font-medium text-slate-600">
+          <div className="col-span-2 mt-2">
+            <label
+              className="text-xs font-medium"
+              style={{ color: "var(--color-slate)" }}
+            >
               Summary
             </label>
-
             <textarea
-              name=""
-              id=""
               placeholder="Short Introduction"
               className="form-input"
               rows={4}
               value={profileData.summary || ""}
               onChange={({ target }) => updateSection("summary", target.value)}
-            ></textarea>
+            />
           </div>
         </div>
       </div>

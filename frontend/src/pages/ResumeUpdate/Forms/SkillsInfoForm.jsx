@@ -10,60 +10,73 @@ const SkillsInfoForm = ({
   removeArrayItem,
 }) => {
   return (
-    <div className="px-5 pt-5">
-      <h2 className="text-lg font-semibold text-gray-900">Skill</h2>
+    <div className="px-6 pt-6">
+      <h2
+        className="text-lg font-medium"
+        style={{ color: "var(--color-ink)", letterSpacing: "-0.005em" }}
+      >
+        Skills
+      </h2>
 
-      <div className="mt-4 flex flex-col mb-3 gap-4">
-        {skillsInfo.map((skill, index) => {
-          return (
-            <div
-              key={index}
-              className="border border-gray-200/80 p-4 rounded-lg relative"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label={"Skill Name"}
-                  placeholder={"JavaScript"}
-                  type={"text"}
-                  value={skill.name || ""}
-                  onChange={({ target }) =>
-                    updateArrayItem(index, "name", target.value)
-                  }
-                />
+      <div className="mt-5 flex flex-col mb-3 gap-4">
+        {skillsInfo.map((skill, index) => (
+          <div
+            key={index}
+            className="p-4 rounded-2xl relative"
+            style={{ border: "1px solid var(--color-dust)" }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Skill Name"
+                placeholder="JavaScript"
+                type="text"
+                value={skill.name || ""}
+                onChange={({ target }) =>
+                  updateArrayItem(index, "name", target.value)
+                }
+              />
 
-                <div className="flex flex-col">
-                  <label className="text-[13px] text-slate-800 mb-1">
-                    Proficiency ({skill.progress / 20 || 0}/5)
-                  </label>
+              <div className="flex flex-col">
+                <label
+                  className="text-[13px] mb-1"
+                  style={{ color: "var(--color-slate)" }}
+                >
+                  Proficiency ({skill.progress / 20 || 0}/5)
+                </label>
 
-                  <div className="mt-5">
-                    <RatingInput
-                      value={skill.progress || 0}
-                      total={5}
-                      onChange={(newValue) =>
-                        updateArrayItem(index, "progress", newValue)
-                      }
-                    />
-                  </div>
+                <div className="mt-5">
+                  <RatingInput
+                    value={skill.progress || 0}
+                    total={5}
+                    onChange={(newValue) =>
+                      updateArrayItem(index, "progress", newValue)
+                    }
+                  />
                 </div>
               </div>
-
-              {skillsInfo.length > 1 && (
-                <button
-                  type="button"
-                  className="absolute top-3 right-3 text-sm text-red-600 hover:underline cursor-pointer"
-                  onClick={() => removeArrayItem(index)}
-                >
-                  <LuTrash2 />
-                </button>
-              )}
             </div>
-          );
-        })}
+
+            {skillsInfo.length > 1 && (
+              <button
+                type="button"
+                className="absolute top-3 right-3 text-sm cursor-pointer"
+                style={{ color: "var(--color-signal-orange)" }}
+                onClick={() => removeArrayItem(index)}
+              >
+                <LuTrash2 />
+              </button>
+            )}
+          </div>
+        ))}
 
         <button
           type="button"
-          className="self-start flex items-center gap-2 px-4 py-2 rounded bg-purple-100 text-purple-800 text-sm font-medium hover:bg-purple-200 cursor-pointer"
+          className="self-start flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200"
+          style={{
+            backgroundColor: "var(--color-cream)",
+            color: "var(--color-ink)",
+            border: "1px solid var(--color-dust)",
+          }}
           onClick={() =>
             addArrayItem({
               name: "",

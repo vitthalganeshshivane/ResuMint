@@ -9,20 +9,28 @@ const WorkExperienceForm = ({
   removeArrayItem,
 }) => {
   return (
-    <div className="px-5 pt-5">
-      <h2 className="text-lg font-semibold text-gray-900">Work Experience</h2>
-      <div className="mt-4 flex flex-col gap-4 mb-3">
+    <div className="px-6 pt-6">
+      <h2
+        className="text-lg font-medium"
+        style={{ color: "var(--color-ink)", letterSpacing: "-0.005em" }}
+      >
+        Work Experience
+      </h2>
+      <div className="mt-5 flex flex-col gap-4 mb-3">
         {Array.isArray(WorkExperience) &&
           WorkExperience.map((experience, index) => (
             <div
               key={index}
-              className="border border-gray-200/80 p-4 rounded-lg relative"
+              className="p-4 rounded-2xl relative"
+              style={{
+                border: "1px solid var(--color-dust)",
+              }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
-                  label={"Company"}
-                  placeholder={"ABC Corp"}
-                  type={"text"}
+                  label="Company"
+                  placeholder="ABC Corp"
+                  type="text"
                   value={experience.company || ""}
                   onChange={({ target }) =>
                     updateArrayItem(index, "company", target.value)
@@ -30,9 +38,9 @@ const WorkExperienceForm = ({
                 />
 
                 <Input
-                  label={"Role"}
-                  placeholder={"Frontend Developer"}
-                  type={"text"}
+                  label="Role"
+                  placeholder="Frontend Developer"
+                  type="text"
                   value={experience.role || ""}
                   onChange={({ target }) =>
                     updateArrayItem(index, "role", target.value)
@@ -40,9 +48,9 @@ const WorkExperienceForm = ({
                 />
 
                 <Input
-                  label={"Start Date"}
-                  placeholder={""}
-                  type={"month"}
+                  label="Start Date"
+                  placeholder=""
+                  type="month"
                   value={experience.startDate || ""}
                   onChange={({ target }) =>
                     updateArrayItem(index, "startDate", target.value)
@@ -50,9 +58,9 @@ const WorkExperienceForm = ({
                 />
 
                 <Input
-                  label={"End Date"}
-                  placeholder={""}
-                  type={"month"}
+                  label="End Date"
+                  placeholder=""
+                  type="month"
                   value={experience.endDate || ""}
                   onChange={({ target }) =>
                     updateArrayItem(index, "endDate", target.value)
@@ -61,12 +69,13 @@ const WorkExperienceForm = ({
               </div>
 
               <div className="mt-4">
-                <label className="text-xs font-medium text-slate-600">
+                <label
+                  className="text-xs font-medium"
+                  style={{ color: "var(--color-slate)" }}
+                >
                   Description
                 </label>
                 <textarea
-                  name=""
-                  id=""
                   placeholder="What did you do in this role?"
                   className="form-input w-full mt-1"
                   rows={3}
@@ -74,13 +83,14 @@ const WorkExperienceForm = ({
                   onChange={({ target }) => {
                     updateArrayItem(index, "description", target.value);
                   }}
-                ></textarea>
+                />
               </div>
 
               {WorkExperience.length > 1 && (
                 <button
                   type="button"
-                  className="absolute top-3 right-3 text-sm text-red-600 hover:underline cursor-pointer"
+                  className="absolute top-3 right-3 text-sm cursor-pointer"
+                  style={{ color: "var(--color-signal-orange)" }}
                   onClick={() => removeArrayItem(index)}
                 >
                   <LuTrash2 />
@@ -91,7 +101,12 @@ const WorkExperienceForm = ({
 
         <button
           type="button"
-          className="self-start flex items-center gap-2 px-4 py-2 rounded bg-purple-100 text-purple-800 text-sm font-medium hover:bg-purple-200 cursor-pointer"
+          className="self-start flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200"
+          style={{
+            backgroundColor: "var(--color-cream)",
+            color: "var(--color-ink)",
+            border: "1px solid var(--color-dust)",
+          }}
           onClick={() =>
             addArrayItem({
               company: "",

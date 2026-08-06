@@ -47,41 +47,34 @@ const ThemeSelector = ({
   useEffect(() => {
     updateBaseWidth();
     window.addEventListener("resize", updateBaseWidth);
-
-    return () => {
-      window.removeEventListener("resize", updateBaseWidth);
-    };
+    return () => window.removeEventListener("resize", updateBaseWidth);
   }, []);
+
   return (
     <div className="container mx-auto px-2 md:px-0">
       <div className="flex items-center justify-between mb-5 mt-2">
         <Tabs tabs={TAB_DATA} activeTab={tabValue} setActiveTab={setTabValue} />
 
-        <button
-          className="btn-small-light"
-          onClick={() => handleThemeSelection()}
-        >
+        <button className="btn-small" onClick={() => handleThemeSelection()}>
           <LuCircleCheckBig className="text-[16px]" />
           Done
         </button>
       </div>
 
       <div className="grid grid-cols-12 gap-5">
-        <div className="col-span-12 md:col-span-5 bg-white">
+        <div className="col-span-12 md:col-span-5">
           <div className="grid grid-cols-2 gap-5 max-h-[80vh] overflow-scroll custom-scrollbar md:pr-5">
             {tabValue === "Templates" &&
-              resumeTemplates.map((template, index) => {
-                return (
-                  <TemplateCard
-                    key={`templates_${index}`}
-                    thumbnailImg={template.thumbnailImg}
-                    isSelected={selectedTemplate?.index === index}
-                    onSelect={() =>
-                      setSelectedTemplate({ theme: template.id, index })
-                    }
-                  />
-                );
-              })}
+              resumeTemplates.map((template, index) => (
+                <TemplateCard
+                  key={`templates_${index}`}
+                  thumbnailImg={template.thumbnailImg}
+                  isSelected={selectedTemplate?.index === index}
+                  onSelect={() =>
+                    setSelectedTemplate({ theme: template.id, index })
+                  }
+                />
+              ))}
 
             {tabValue === "Color Palettes" &&
               themeColorPalette.themeOne.map((colors, index) => (
@@ -95,10 +88,7 @@ const ThemeSelector = ({
           </div>
         </div>
 
-        <div
-          className="col-span-2 md:col-span-7 bg-white -mt-3"
-          ref={resumeRef}
-        >
+        <div className="col-span-2 md:col-span-7 -mt-3 bg-white rounded-2xl overflow-hidden" ref={resumeRef}>
           <RenderResume
             templateId={selectedTemplate?.theme || ""}
             resumeData={resumeData || DUMMY_RESUME_DATA}
@@ -116,16 +106,19 @@ export default ThemeSelector;
 const ColorPalette = ({ colors, isSelected, onSelect }) => {
   return (
     <div
-      className={`h-28 bg-purple-50 flex rounded-lg overflow-hidden border-2 ${
-        isSelected ? "border-purple-500" : "border-none"
-      }`}
+      className="h-28 flex rounded-xl overflow-hidden cursor-pointer transition-all duration-200"
+      style={{
+        border: isSelected
+          ? "2px solid var(--color-ink)"
+          : "2px solid var(--color-dust)",
+      }}
+      onClick={onSelect}
     >
       {colors.map((color, index) => (
         <div
           key={`color_${index}`}
           className="flex-1"
           style={{ backgroundColor: colors[index] }}
-          onClick={onSelect}
         />
       ))}
     </div>

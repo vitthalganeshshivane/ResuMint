@@ -40,11 +40,8 @@ const EditResume = () => {
   const resumeDownloadRef = useRef(null);
 
   const [baseWidth, setBaseWidth] = useState(800);
-
   const [openThemeSelector, setOpenThemeSelector] = useState(false);
-
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
-
   const [currentPage, setCurrentPage] = useState("profile-info");
   const [progress, setProgress] = useState(0);
   const [resumeData, setResumeData] = useState({
@@ -61,7 +58,6 @@ const EditResume = () => {
       theme: "",
       colorPalette: "",
     },
-
     contactInfo: {
       email: "",
       phone: "",
@@ -70,7 +66,6 @@ const EditResume = () => {
       github: "",
       website: "",
     },
-
     workExperience: [
       {
         company: "",
@@ -88,14 +83,12 @@ const EditResume = () => {
         endDate: "",
       },
     ],
-
     skills: [
       {
         name: "",
         progress: 0,
       },
     ],
-
     projects: [
       {
         title: "",
@@ -104,7 +97,6 @@ const EditResume = () => {
         liveDemo: "",
       },
     ],
-
     certifications: [
       {
         title: "",
@@ -112,7 +104,6 @@ const EditResume = () => {
         year: "",
       },
     ],
-
     languages: [
       {
         name: "",
@@ -124,34 +115,25 @@ const EditResume = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(resumeData);
-
   const validateAndNext = (e) => {
     const errors = [];
 
     switch (currentPage) {
       case "profile-info": {
         const { fullName, designation, summary } = resumeData.profileInfo;
-
         if (!fullName.trim()) errors.push("Full Name is required");
         if (!designation.trim()) errors.push("Designation is required");
         if (!summary.trim()) errors.push("Summary is required");
-
         break;
       }
-
       case "contact-info": {
         const { email, phone } = resumeData.contactInfo;
-
         if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email))
           errors.push("Valid email is required.");
-
         if (!phone.trim())
           errors.push("Valid 10-digit phone number is required");
-
         break;
       }
-
       case "work-experience": {
         resumeData.workExperience.forEach(
           ({ company, role, startDate, endDate }, index) => {
@@ -167,7 +149,6 @@ const EditResume = () => {
         );
         break;
       }
-
       case "education-info": {
         resumeData.education.forEach(
           ({ degree, institution, startDate, endDate }, index) => {
@@ -183,7 +164,6 @@ const EditResume = () => {
         );
         break;
       }
-
       case "skills": {
         resumeData.skills.forEach(({ name, progress }, index) => {
           if (!name.trim())
@@ -195,7 +175,6 @@ const EditResume = () => {
         });
         break;
       }
-
       case "projects": {
         resumeData.projects.forEach(({ title, description }, index) => {
           if (!title.trim())
@@ -207,7 +186,6 @@ const EditResume = () => {
         });
         break;
       }
-
       case "certifications": {
         resumeData.certifications.forEach(({ title, issuer }, index) => {
           if (!title.trim())
@@ -219,7 +197,6 @@ const EditResume = () => {
         });
         break;
       }
-
       case "additionalInfo": {
         if (
           resumeData.languages.length === 0 ||
@@ -227,7 +204,6 @@ const EditResume = () => {
         ) {
           errors.push("At least one language is required");
         }
-
         if (
           resumeData.interests.length === 0 ||
           !resumeData.interests[0]?.trim()
@@ -236,7 +212,6 @@ const EditResume = () => {
         }
         break;
       }
-
       default:
         break;
     }
@@ -268,7 +243,6 @@ const EditResume = () => {
     if (currentIndex !== -1 && currentIndex < pages.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentPage(pages[nextIndex]);
-
       const percent = Math.round((nextIndex / (pages.length - 1)) * 100);
       setProgress(percent);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -293,7 +267,6 @@ const EditResume = () => {
     if (currentIndex > 0) {
       const prevIndex = currentIndex - 1;
       setCurrentPage(pages[prevIndex]);
-
       const percent = Math.round((prevIndex / (pages.length - 1)) * 100);
       setProgress(percent);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -312,7 +285,6 @@ const EditResume = () => {
             onNext={validateAndNext}
           />
         );
-
       case "contact-info":
         return (
           <ContactInfoForm
@@ -322,7 +294,6 @@ const EditResume = () => {
             }}
           />
         );
-
       case "work-experience":
         return (
           <WorkExperienceForm
@@ -336,7 +307,6 @@ const EditResume = () => {
             }
           />
         );
-
       case "education-info":
         return (
           <EducationDetailsForm
@@ -348,7 +318,6 @@ const EditResume = () => {
             removeArrayItem={(index) => removeArrayItem("education", index)}
           />
         );
-
       case "skills":
         return (
           <SkillsInfoForm
@@ -360,7 +329,6 @@ const EditResume = () => {
             removeArrayItem={(index) => removeArrayItem("skills", index)}
           />
         );
-
       case "projects":
         return (
           <ProjectDetailForm
@@ -372,7 +340,6 @@ const EditResume = () => {
             removeArrayItem={(index) => removeArrayItem("projects", index)}
           />
         );
-
       case "certifications":
         return (
           <CertificationInfoForm
@@ -386,7 +353,6 @@ const EditResume = () => {
             }
           />
         );
-
       case "additionalInfo":
         return (
           <AdditionalInfoForm
@@ -401,7 +367,6 @@ const EditResume = () => {
             }
           />
         );
-
       default:
         return null;
     }
@@ -417,46 +382,9 @@ const EditResume = () => {
     }));
   };
 
-  // const updateArrayItem = (section, index, key, value) => {
-  //   setResumeData((prev) => {
-  //     const updatedArray = [...prev[section]];
-
-  //     if (key === null) {
-  //       updateArrayItem[index] = value;
-  //     } else {
-  //       updatedArray[index] = {
-  //         ...updatedArray[index],
-  //         [key]: value,
-  //       };
-  //     }
-
-  //     return {
-  //       ...prev,
-  //       [section]: updatedArray,
-  //     };
-  //   });
-  // };
-
-  // const updateArrayItem = (section, index, key, value) => {
-  //   setResumeData((prev) => {
-  //     const updatedArray = [...prev[section]];
-
-  //     updatedArray[index] = {
-  //       ...updatedArray[index],
-  //       [key]: value,
-  //     };
-
-  //     return {
-  //       ...prev,
-  //       [section]: updatedArray,
-  //     };
-  //   });
-  // };
-
   const updateArrayItem = (section, index, key, value) => {
     setResumeData((prev) => {
       const updatedArray = [...prev[section]];
-
       if (key === null) {
         updatedArray[index] = value;
       } else {
@@ -465,7 +393,6 @@ const EditResume = () => {
           [key]: value,
         };
       }
-
       return {
         ...prev,
         [section]: updatedArray,
@@ -499,10 +426,8 @@ const EditResume = () => {
 
       if (response.data && response.data.profileInfo) {
         const resumeInfo = response.data;
-
         setResumeData((prevState) => ({
           ...prevState,
-          // title: resumeInfo?.title || "Untitled",
           title: resumeInfo?.title ?? prevState.title,
           template: resumeInfo?.template || prevState?.template,
           profileInfo: resumeInfo?.profileInfo || prevState?.profileInfo,
@@ -526,16 +451,12 @@ const EditResume = () => {
   const uploadResumeImages = async () => {
     try {
       setIsLoading(true);
-
       fixTailwindColors(resumeRef.current);
       const imageDataUrl = await captureElementAsImage(resumeRef.current);
-
-      // Convert base64 to File
       const thumbnailFile = dataURLtoFile(
         imageDataUrl,
         `resume-${resumeId}.png`,
       );
-
       const profileImageFile = resumeData?.profileInfo?.profileImg || null;
 
       const formData = new FormData();
@@ -549,11 +470,7 @@ const EditResume = () => {
       );
 
       const { thumbnailLink, profilePreviewUrl } = uploadResponse.data;
-
-      console.log("RESUME_DATA___", resumeData);
-
       await updateResumeDetails(thumbnailLink, profilePreviewUrl);
-
       toast.success("Resume Updated Successfully!");
       navigate("/dashboard");
     } catch (error) {
@@ -567,26 +484,20 @@ const EditResume = () => {
   const updateResumeDetails = async (thumbnailLink, profilePreviewUrl) => {
     try {
       setIsLoading(true);
-
-      const response = await axiosInstance.put(
-        API_PATHS.RESUME.UPDATE(resumeId),
-        {
-          ...resumeData,
-          thumbnailLink: thumbnailLink || "",
-          profileInfo: {
-            ...resumeData.profileInfo,
-            profilePreviewUrl: profilePreviewUrl || "",
-          },
+      await axiosInstance.put(API_PATHS.RESUME.UPDATE(resumeId), {
+        ...resumeData,
+        thumbnailLink: thumbnailLink || "",
+        profileInfo: {
+          ...resumeData.profileInfo,
+          profilePreviewUrl: profilePreviewUrl || "",
         },
-      );
+      });
     } catch (err) {
       console.error("Error capturing image:", err);
     } finally {
       setIsLoading(false);
     }
   };
-
-  // const reactToPrintFn = useReactToPrint({ contentRef: resumeDownloadRef });
 
   const safeFileName = (resumeData.title || "Resume")
     .replace(/[^a-z0-9]/gi, "_")
@@ -603,17 +514,14 @@ const EditResume = () => {
     }
   };
 
-  // Delete Resume
   const handleDeleteResume = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.delete(
-        API_PATHS.RESUME.DELETE(resumeId),
-      );
+      await axiosInstance.delete(API_PATHS.RESUME.DELETE(resumeId));
       toast.success("Resume Deleted Successfully");
       navigate("/dashboard");
     } catch (err) {
-      console.error("Error capturing image:", err);
+      console.error("Error deleting resume:", err);
     } finally {
       setIsLoading(false);
     }
@@ -622,37 +530,26 @@ const EditResume = () => {
   useEffect(() => {
     updateBaseWidth();
     window.addEventListener("resize", updateBaseWidth);
-
-    if (resumeId) {
-      fetchResumeDetailsById();
-    }
-
-    return () => {
-      window.removeEventListener("resize", updateBaseWidth);
-    };
+    if (resumeId) fetchResumeDetailsById();
+    return () => window.removeEventListener("resize", updateBaseWidth);
   }, []);
 
   return (
     <DashboardLayout>
       <div className="container mx-auto">
-        <div className="flex items-center justify-between gap-5 bg-white rounded-lg border border-purple-100 py-3 px-4">
-          {/* <TitleInput
-            title={resumeData.title}
-            setTitle={(value) => {
-              setResumeData((prevState) => ({
-                ...prevState,
-                title: value,
-              }));
-            }}
-          /> */}
-
+        {/* Top Bar */}
+        <div
+          className="flex items-center justify-between gap-5 py-3 px-5"
+          style={{
+            backgroundColor: "var(--color-cream-lifted)",
+            borderRadius: "20px",
+            border: "1px solid var(--color-dust)",
+          }}
+        >
           <TitleInput
             title={resumeData.title}
             setTitle={(value) => {
-              setResumeData((prev) => ({
-                ...prev,
-                title: value,
-              }));
+              setResumeData((prev) => ({ ...prev, title: value }));
             }}
             onSave={async () => {
               await axiosInstance.put(API_PATHS.RESUME.UPDATE(resumeId), {
@@ -661,13 +558,13 @@ const EditResume = () => {
             }}
           />
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               className="btn-small-light"
               onClick={() => setOpenThemeSelector(true)}
             >
               <LuPalette className="text-[16px]" />
-              <span className="hidden md:block">Change Theme</span>
+              <span className="hidden md:block">Theme</span>
             </button>
 
             <button className="btn-small-light" onClick={handleDeleteResume}>
@@ -680,21 +577,36 @@ const EditResume = () => {
               onClick={() => setOpenPreviewModal(true)}
             >
               <LuDownload className="text-[16px]" />
-              <span className="hidden md:block">Preview & Download</span>
+              <span className="hidden md:block">Preview</span>
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-white rounded-lg border border-purple-100 overflow-hidden mt-3">
+        {/* Editor + Preview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+          {/* Form Panel */}
+          <div
+            className="overflow-hidden"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "24px",
+              border: "1px solid var(--color-dust)",
+            }}
+          >
             <StepProgress progress={progress} />
 
             {renderForm()}
 
             <div className="mx-5">
               {errorMsg && (
-                <div className="flex items-center gap-2 text-[11px] font-medium text-amber-600 bg-amber-100 px-2 py-0 my-1 rounded">
-                  <LuCircleAlert className="" /> {errorMsg}
+                <div
+                  className="flex items-center gap-2 text-[11px] font-medium px-3 py-1.5 my-1 rounded-xl"
+                  style={{
+                    color: "var(--color-signal-orange)",
+                    backgroundColor: "var(--color-cream)",
+                  }}
+                >
+                  <LuCircleAlert /> {errorMsg}
                 </div>
               )}
 
@@ -724,11 +636,9 @@ const EditResume = () => {
                   {currentPage === "additionalInfo" && (
                     <LuDownload className="text-[16px]" />
                   )}
-
                   {currentPage === "additionalInfo"
                     ? "Preview & Download"
                     : "Next"}
-
                   {currentPage !== "additionalInfo" && (
                     <LuArrowLeft className="text-[16px] rotate-180" />
                   )}
@@ -737,7 +647,8 @@ const EditResume = () => {
             </div>
           </div>
 
-          <div ref={resumeRef} className="h-[100vh]">
+          {/* Preview Panel */}
+          <div ref={resumeRef} className="h-[100vh] bg-white rounded-2xl overflow-hidden">
             <RenderResume
               templateId={resumeData?.template?.theme || ""}
               resumeData={resumeData}
@@ -777,7 +688,7 @@ const EditResume = () => {
         actionBtnIcon={<LuDownload className="text-[16px]" />}
         onActionClick={() => reactToPrintFn()}
       >
-        <div ref={resumeDownloadRef} className="w-[98vw] h-[90vh]">
+        <div ref={resumeDownloadRef} className="w-[98vw] h-[90vh] bg-white">
           <RenderResume
             templateId={resumeData?.template?.theme || ""}
             resumeData={resumeData}
