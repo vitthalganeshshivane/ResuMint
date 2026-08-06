@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LuArrowLeft,
@@ -9,11 +9,14 @@ import {
   LuSearch,
   LuSparkles,
   LuShield,
-  LuEye,
   LuLoader,
   LuRotateCcw,
+  LuTrash2,
+  LuClock,
+  LuChevronRight,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
+import moment from "moment";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
@@ -59,14 +62,7 @@ function AnimatedScoreRing({ score, size = 160, strokeWidth = 10 }) {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="var(--color-dust)"
-          strokeWidth={strokeWidth}
-        />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--color-dust)" strokeWidth={strokeWidth} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -81,10 +77,7 @@ function AnimatedScoreRing({ score, size = 160, strokeWidth = 10 }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span
-          className="text-4xl font-bold"
-          style={{ color: colors.text, letterSpacing: "-0.03em" }}
-        >
+        <span className="text-4xl font-bold" style={{ color: colors.text, letterSpacing: "-0.03em" }}>
           {animatedScore}
         </span>
         <span className="text-[11px] font-medium" style={{ color: "var(--color-slate)" }}>
@@ -116,22 +109,14 @@ function SectionCard({ label, score, feedback, delay }) {
       }}
     >
       <div className="flex items-center justify-between mb-2">
-        <span
-          className="text-[13px] font-semibold capitalize"
-          style={{ color: "var(--color-ink)" }}
-        >
+        <span className="text-[13px] font-semibold capitalize" style={{ color: "var(--color-ink)" }}>
           {label}
         </span>
-        <span
-          className="text-[12px] font-bold px-2.5 py-0.5 rounded-full"
-          style={{ backgroundColor: colors.bg, color: colors.text }}
-        >
+        <span className="text-[12px] font-bold px-2.5 py-0.5 rounded-full" style={{ backgroundColor: colors.bg, color: colors.text }}>
           {score}/100
         </span>
       </div>
-      <p className="text-[12px] leading-relaxed" style={{ color: "var(--color-slate)" }}>
-        {feedback}
-      </p>
+      <p className="text-[12px] leading-relaxed" style={{ color: "var(--color-slate)" }}>{feedback}</p>
     </div>
   );
 }
@@ -147,20 +132,12 @@ function ListItem({ icon: Icon, text, color, delay }) {
   return (
     <div
       className="flex items-start gap-3 p-3 rounded-xl transition-all duration-500"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateX(0)" : "translateX(-8px)",
-      }}
+      style={{ opacity: visible ? 1 : 0, transform: visible ? "translateX(0)" : "translateX(-8px)" }}
     >
-      <div
-        className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5"
-        style={{ backgroundColor: color + "18", color }}
-      >
+      <div className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5" style={{ backgroundColor: color + "18", color }}>
         <Icon size={12} />
       </div>
-      <p className="text-[12px] leading-relaxed" style={{ color: "var(--color-ink)", fontWeight: 450 }}>
-        {text}
-      </p>
+      <p className="text-[12px] leading-relaxed" style={{ color: "var(--color-ink)", fontWeight: 450 }}>{text}</p>
     </div>
   );
 }
@@ -181,6 +158,46 @@ const AnalyzerPage = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const fetchHistory = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.ANALYZER.HISTORY);
+      setHistory(response.data);
+    } catch (error) {
+      console.error("Failed to fetch history:", error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const saveToHistory = async (fileName, analysis) => {
+    try {
+      await axiosInstance.post(API_PATHS.ANALYZER.HISTORY, { fileName, analysis });
+      fetchHistory();
+    } catch (error) {
+      console.error("Failed to save to history:", error);
+    }
+  };
+
+  const deleteFromHistory = async (id) => {
+    setDeletingId(id);
+    try {
+      await axiosInstance.delete(API_PATHS.ANALYZER.DELETE_HISTORY(id));
+      setHistory((prev) => prev.filter((h) => h._id !== id));
+      toast.success("Deleted");
+    } catch (error) {
+      toast.error("Failed to delete");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -245,13 +262,12 @@ const AnalyzerPage = () => {
       const response = await axiosInstance.post(
         API_PATHS.ANALYZER.ANALYZE,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          timeout: 60000,
-        },
+        { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 },
       );
 
-      setAnalysisResult(response.data.analysis);
+      const result = response.data.analysis;
+      setAnalysisResult(result);
+      saveToHistory(selectedFile.name, result);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Analysis failed");
     } finally {
@@ -259,6 +275,17 @@ const AnalyzerPage = () => {
       setAnalyzing(false);
       setCurrentStep(0);
     }
+  };
+
+  const viewHistoryItem = (item) => {
+    setAnalysisResult({
+      overallScore: item.overallScore,
+      summary: item.summary,
+      sections: item.sections,
+      strengths: item.strengths,
+      improvements: item.improvements,
+      atsAnalysis: item.atsAnalysis,
+    });
   };
 
   const resetAnalyzer = () => {
@@ -278,19 +305,12 @@ const AnalyzerPage = () => {
           <button
             onClick={() => navigate("/dashboard")}
             className="w-9 h-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200"
-            style={{
-              backgroundColor: "var(--color-cream-lifted)",
-              color: "var(--color-ink)",
-              border: "1px solid var(--color-dust)",
-            }}
+            style={{ backgroundColor: "var(--color-cream-lifted)", color: "var(--color-ink)", border: "1px solid var(--color-dust)" }}
           >
             <LuArrowLeft size={16} />
           </button>
           <div>
-            <h1
-              className="text-xl font-semibold"
-              style={{ color: "var(--color-ink)", letterSpacing: "-0.02em" }}
-            >
+            <h1 className="text-xl font-semibold" style={{ color: "var(--color-ink)", letterSpacing: "-0.02em" }}>
               Resume Analyzer
             </h1>
             <p className="text-[12px]" style={{ color: "var(--color-slate)" }}>
@@ -314,109 +334,36 @@ const AnalyzerPage = () => {
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.docx"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
+            <input ref={fileInputRef} type="file" accept=".pdf,.docx" className="hidden" onChange={handleFileSelect} />
 
             {!selectedFile ? (
               <>
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{
-                    backgroundColor: "var(--color-cream-lifted)",
-                    color: "var(--color-signal-orange)",
-                    border: "1.5px solid var(--color-dust)",
-                  }}
-                >
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "var(--color-cream-lifted)", color: "var(--color-signal-orange)", border: "1.5px solid var(--color-dust)" }}>
                   <LuUpload size={24} />
                 </div>
-                <p
-                  className="text-[15px] font-medium mb-1"
-                  style={{ color: "var(--color-ink)" }}
-                >
-                  Drop your resume here
-                </p>
-                <p className="text-[12px] mb-4" style={{ color: "var(--color-slate)" }}>
-                  or click to browse
-                </p>
+                <p className="text-[15px] font-medium mb-1" style={{ color: "var(--color-ink)" }}>Drop your resume here</p>
+                <p className="text-[12px] mb-4" style={{ color: "var(--color-slate)" }}>or click to browse</p>
                 <div className="flex items-center gap-2">
-                  <span
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                    style={{
-                      backgroundColor: "var(--color-cream-lifted)",
-                      color: "var(--color-slate)",
-                      border: "1px solid var(--color-dust)",
-                    }}
-                  >
-                    PDF
-                  </span>
-                  <span
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                    style={{
-                      backgroundColor: "var(--color-cream-lifted)",
-                      color: "var(--color-slate)",
-                      border: "1px solid var(--color-dust)",
-                    }}
-                  >
-                    DOCX
-                  </span>
-                  <span
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                    style={{
-                      backgroundColor: "var(--color-cream-lifted)",
-                      color: "var(--color-slate)",
-                      border: "1px solid var(--color-dust)",
-                    }}
-                  >
-                    Max 5MB
-                  </span>
+                  {["PDF", "DOCX", "Max 5MB"].map((t) => (
+                    <span key={t} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "var(--color-cream-lifted)", color: "var(--color-slate)", border: "1px solid var(--color-dust)" }}>
+                      {t}
+                    </span>
+                  ))}
                 </div>
               </>
             ) : (
               <>
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{
-                    backgroundColor: "var(--color-cream-lifted)",
-                    color: "var(--color-signal-orange)",
-                    border: "1.5px solid var(--color-dust)",
-                  }}
-                >
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "var(--color-cream-lifted)", color: "var(--color-signal-orange)", border: "1.5px solid var(--color-dust)" }}>
                   <LuFileText size={24} />
                 </div>
-                <p
-                  className="text-[15px] font-medium mb-1"
-                  style={{ color: "var(--color-ink)" }}
-                >
-                  {selectedFile.name}
-                </p>
-                <p className="text-[12px] mb-5" style={{ color: "var(--color-slate)" }}>
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                </p>
+                <p className="text-[15px] font-medium mb-1" style={{ color: "var(--color-ink)" }}>{selectedFile.name}</p>
+                <p className="text-[12px] mb-5" style={{ color: "var(--color-slate)" }}>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
                 <div className="flex items-center gap-3">
-                  <button
-                    className="btn-small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      runAnalysis();
-                    }}
-                  >
-                    <LuSearch size={14} />
-                    Analyze Resume
+                  <button className="btn-small" onClick={(e) => { e.stopPropagation(); runAnalysis(); }}>
+                    <LuSearch size={14} /> Analyze Resume
                   </button>
-                  <button
-                    className="btn-small-light"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedFile(null);
-                    }}
-                  >
-                    <LuRotateCcw size={14} />
-                    Change File
+                  <button className="btn-small-light" onClick={(e) => { e.stopPropagation(); setSelectedFile(null); }}>
+                    <LuRotateCcw size={14} /> Change File
                   </button>
                 </div>
               </>
@@ -426,98 +373,27 @@ const AnalyzerPage = () => {
 
         {/* Analyzing State */}
         {analyzing && (
-          <div
-            className="p-10 flex flex-col items-center justify-center"
-            style={{
-              borderRadius: "24px",
-              border: "1px solid var(--color-dust)",
-              backgroundColor: "var(--color-cream-lifted)",
-            }}
-          >
+          <div className="p-10 flex flex-col items-center justify-center" style={{ borderRadius: "24px", border: "1px solid var(--color-dust)", backgroundColor: "var(--color-cream-lifted)" }}>
             <div className="relative mb-6">
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center"
-                style={{
-                  backgroundColor: "var(--color-cream)",
-                  border: "2px solid var(--color-dust)",
-                }}
-              >
-                <LuSparkles
-                  size={28}
-                  style={{ color: "var(--color-signal-orange)" }}
-                  className="animate-pulse"
-                />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--color-cream)", border: "2px solid var(--color-dust)" }}>
+                <LuSparkles size={28} style={{ color: "var(--color-signal-orange)" }} className="animate-pulse" />
               </div>
-              <div
-                className="absolute inset-0 rounded-full animate-ping"
-                style={{
-                  border: "2px solid var(--color-signal-orange)",
-                  opacity: 0.2,
-                }}
-              />
+              <div className="absolute inset-0 rounded-full animate-ping" style={{ border: "2px solid var(--color-signal-orange)", opacity: 0.2 }} />
             </div>
-
-            <p
-              className="text-[15px] font-medium mb-2"
-              style={{ color: "var(--color-ink)" }}
-            >
-              Analyzing your resume
-            </p>
-            <p
-              className="text-[12px] mb-6"
-              style={{ color: "var(--color-slate)" }}
-            >
-              {ANALYSIS_STEPS[currentStep]}
-            </p>
-
-            {/* Progress steps */}
+            <p className="text-[15px] font-medium mb-2" style={{ color: "var(--color-ink)" }}>Analyzing your resume</p>
+            <p className="text-[12px] mb-6" style={{ color: "var(--color-slate)" }}>{ANALYSIS_STEPS[currentStep]}</p>
             <div className="flex flex-col gap-2 w-full max-w-[260px]">
               {ANALYSIS_STEPS.map((step, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2.5 transition-all duration-300"
-                  style={{
-                    opacity: i <= currentStep ? 1 : 0.3,
-                  }}
-                >
-                  <div
-                    className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-300"
+                <div key={i} className="flex items-center gap-2.5 transition-all duration-300" style={{ opacity: i <= currentStep ? 1 : 0.3 }}>
+                  <div className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-300"
                     style={{
-                      backgroundColor:
-                        i < currentStep
-                          ? "var(--color-signal-orange)"
-                          : i === currentStep
-                            ? "var(--color-cream)"
-                            : "var(--color-cream)",
-                      color:
-                        i < currentStep
-                          ? "var(--color-cream)"
-                          : "var(--color-slate)",
-                      border:
-                        i === currentStep
-                          ? "2px solid var(--color-signal-orange)"
-                          : i < currentStep
-                            ? "none"
-                            : "1.5px solid var(--color-dust)",
-                    }}
-                  >
-                    {i < currentStep ? (
-                      <LuCheck size={10} />
-                    ) : i === currentStep ? (
-                      <LuLoader size={10} className="animate-spin" />
-                    ) : null}
+                      backgroundColor: i < currentStep ? "var(--color-signal-orange)" : "var(--color-cream)",
+                      color: i < currentStep ? "var(--color-cream)" : "var(--color-slate)",
+                      border: i === currentStep ? "2px solid var(--color-signal-orange)" : i < currentStep ? "none" : "1.5px solid var(--color-dust)",
+                    }}>
+                    {i < currentStep ? <LuCheck size={10} /> : i === currentStep ? <LuLoader size={10} className="animate-spin" /> : null}
                   </div>
-                  <span
-                    className="text-[11px] font-medium"
-                    style={{
-                      color:
-                        i <= currentStep
-                          ? "var(--color-ink)"
-                          : "var(--color-slate)",
-                    }}
-                  >
-                    {step}
-                  </span>
+                  <span className="text-[11px] font-medium" style={{ color: i <= currentStep ? "var(--color-ink)" : "var(--color-slate)" }}>{step}</span>
                 </div>
               ))}
             </div>
@@ -527,242 +403,131 @@ const AnalyzerPage = () => {
         {/* Results */}
         {analysisResult && !analyzing && (
           <div className="flex flex-col gap-5">
-            {/* Score Header */}
-            <div
-              className="p-6 flex flex-col items-center"
-              style={{
-                backgroundColor: "var(--color-cream-lifted)",
-                borderRadius: "24px",
-                border: "1px solid var(--color-dust)",
-              }}
-            >
+            <div className="p-6 flex flex-col items-center" style={{ backgroundColor: "var(--color-cream-lifted)", borderRadius: "24px", border: "1px solid var(--color-dust)" }}>
               <AnimatedScoreRing score={analysisResult.overallScore || 0} />
-              <p
-                className="text-[13px] font-medium mt-3"
-                style={{ color: "var(--color-slate)" }}
-              >
-                Overall Resume Score
-              </p>
-              <p
-                className="text-[12px] text-center mt-2 max-w-md leading-relaxed"
-                style={{ color: "var(--color-ink)", fontWeight: 450 }}
-              >
-                {analysisResult.summary}
-              </p>
+              <p className="text-[13px] font-medium mt-3" style={{ color: "var(--color-slate)" }}>Overall Resume Score</p>
+              <p className="text-[12px] text-center mt-2 max-w-md leading-relaxed" style={{ color: "var(--color-ink)", fontWeight: 450 }}>{analysisResult.summary}</p>
             </div>
 
-            {/* Section Scores */}
             {analysisResult.sections && Object.keys(analysisResult.sections).length > 0 && (
               <div>
-                <h3
-                  className="text-[13px] font-semibold uppercase mb-3 px-1"
-                  style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}
-                >
-                  Section Breakdown
-                </h3>
+                <h3 className="text-[13px] font-semibold uppercase mb-3 px-1" style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}>Section Breakdown</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {Object.entries(analysisResult.sections).map(
-                    ([key, section], i) => (
-                      <SectionCard
-                        key={key}
-                        label={key}
-                        score={section.score}
-                        feedback={section.feedback}
-                        delay={i * 100}
-                      />
-                    ),
-                  )}
+                  {Object.entries(analysisResult.sections).map(([key, section], i) => (
+                    <SectionCard key={key} label={key} score={section.score} feedback={section.feedback} delay={i * 100} />
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Strengths */}
             {analysisResult.strengths?.length > 0 && (
-              <div
-                className="p-5"
-                style={{
-                  backgroundColor: "var(--color-cream-lifted)",
-                  borderRadius: "24px",
-                  border: "1px solid var(--color-dust)",
-                }}
-              >
+              <div className="p-5" style={{ backgroundColor: "var(--color-cream-lifted)", borderRadius: "24px", border: "1px solid var(--color-dust)" }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "#DCFCE7", color: "#16A34A" }}
-                  >
-                    <LuCheck size={14} />
-                  </div>
-                  <h3
-                    className="text-[14px] font-semibold"
-                    style={{ color: "var(--color-ink)" }}
-                  >
-                    What's Working Well
-                  </h3>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "#DCFCE7", color: "#16A34A" }}><LuCheck size={14} /></div>
+                  <h3 className="text-[14px] font-semibold" style={{ color: "var(--color-ink)" }}>What's Working Well</h3>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {analysisResult.strengths.map((item, i) => (
-                    <ListItem
-                      key={i}
-                      icon={LuCheck}
-                      text={item}
-                      color="#16A34A"
-                      delay={i * 80}
-                    />
-                  ))}
+                  {analysisResult.strengths.map((item, i) => <ListItem key={i} icon={LuCheck} text={item} color="#16A34A" delay={i * 80} />)}
                 </div>
               </div>
             )}
 
-            {/* Improvements */}
             {analysisResult.improvements?.length > 0 && (
-              <div
-                className="p-5"
-                style={{
-                  backgroundColor: "var(--color-cream-lifted)",
-                  borderRadius: "24px",
-                  border: "1px solid var(--color-dust)",
-                }}
-              >
+              <div className="p-5" style={{ backgroundColor: "var(--color-cream-lifted)", borderRadius: "24px", border: "1px solid var(--color-dust)" }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}
-                  >
-                    <LuTriangleAlert size={14} />
-                  </div>
-                  <h3
-                    className="text-[14px] font-semibold"
-                    style={{ color: "var(--color-ink)" }}
-                  >
-                    Key Improvements
-                  </h3>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}><LuTriangleAlert size={14} /></div>
+                  <h3 className="text-[14px] font-semibold" style={{ color: "var(--color-ink)" }}>Key Improvements</h3>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {analysisResult.improvements.map((item, i) => (
-                    <ListItem
-                      key={i}
-                      icon={LuTriangleAlert}
-                      text={item}
-                      color="#D97706"
-                      delay={i * 80}
-                    />
-                  ))}
+                  {analysisResult.improvements.map((item, i) => <ListItem key={i} icon={LuTriangleAlert} text={item} color="#D97706" delay={i * 80} />)}
                 </div>
               </div>
             )}
 
-            {/* ATS Analysis */}
             {ats && (
-              <div
-                className="p-5"
-                style={{
-                  backgroundColor: "var(--color-cream-lifted)",
-                  borderRadius: "24px",
-                  border: "1px solid var(--color-dust)",
-                }}
-              >
+              <div className="p-5" style={{ backgroundColor: "var(--color-cream-lifted)", borderRadius: "24px", border: "1px solid var(--color-dust)" }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: "var(--color-cream)",
-                      color: "var(--color-signal-orange)",
-                    }}
-                  >
-                    <LuShield size={14} />
-                  </div>
-                  <h3
-                    className="text-[14px] font-semibold"
-                    style={{ color: "var(--color-ink)" }}
-                  >
-                    ATS Compatibility
-                  </h3>
-                  <span
-                    className="text-[11px] font-bold px-2 py-0.5 rounded-full ml-auto"
-                    style={{
-                      backgroundColor: SCORE_COLORS[getScoreLevel(ats.score)].bg,
-                      color: SCORE_COLORS[getScoreLevel(ats.score)].text,
-                    }}
-                  >
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}><LuShield size={14} /></div>
+                  <h3 className="text-[14px] font-semibold" style={{ color: "var(--color-ink)" }}>ATS Compatibility</h3>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full ml-auto" style={{ backgroundColor: SCORE_COLORS[getScoreLevel(ats.score)].bg, color: SCORE_COLORS[getScoreLevel(ats.score)].text }}>
                     {ats.score}/100
                   </span>
                 </div>
-
                 {ats.foundKeywords?.length > 0 && (
                   <div className="mb-3">
-                    <p
-                      className="text-[11px] font-semibold uppercase mb-1.5"
-                      style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}
-                    >
-                      Keywords Found
-                    </p>
+                    <p className="text-[11px] font-semibold uppercase mb-1.5" style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}>Keywords Found</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {ats.foundKeywords.map((kw, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                          style={{
-                            backgroundColor: "#DCFCE7",
-                            color: "#16A34A",
-                          }}
-                        >
-                          {kw}
-                        </span>
-                      ))}
+                      {ats.foundKeywords.map((kw, i) => <span key={i} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "#DCFCE7", color: "#16A34A" }}>{kw}</span>)}
                     </div>
                   </div>
                 )}
-
                 {ats.missingKeywords?.length > 0 && (
                   <div className="mb-3">
-                    <p
-                      className="text-[11px] font-semibold uppercase mb-1.5"
-                      style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}
-                    >
-                      Suggested Keywords
-                    </p>
+                    <p className="text-[11px] font-semibold uppercase mb-1.5" style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}>Suggested Keywords</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {ats.missingKeywords.map((kw, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                          style={{
-                            backgroundColor: "#FEF3C7",
-                            color: "#D97706",
-                          }}
-                        >
-                          {kw}
-                        </span>
-                      ))}
+                      {ats.missingKeywords.map((kw, i) => <span key={i} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}>{kw}</span>)}
                     </div>
                   </div>
                 )}
-
-                {ats.notes && (
-                  <p
-                    className="text-[12px] leading-relaxed mt-2"
-                    style={{ color: "var(--color-slate)" }}
-                  >
-                    {ats.notes}
-                  </p>
-                )}
+                {ats.notes && <p className="text-[12px] leading-relaxed mt-2" style={{ color: "var(--color-slate)" }}>{ats.notes}</p>}
               </div>
             )}
 
-            {/* Actions */}
             <div className="flex items-center justify-center gap-3 pt-2 pb-4">
-              <button className="btn-small" onClick={resetAnalyzer}>
-                <LuRotateCcw size={14} />
-                Analyze Another Resume
-              </button>
-              <button
-                className="btn-small-light"
-                onClick={() => navigate("/dashboard")}
-              >
-                <LuArrowLeft size={14} />
-                Back to Dashboard
-              </button>
+              <button className="btn-small" onClick={resetAnalyzer}><LuRotateCcw size={14} /> Analyze Another</button>
+              <button className="btn-small-light" onClick={() => { setAnalysisResult(null); fetchHistory(); }}><LuArrowLeft size={14} /> Back</button>
+            </div>
+          </div>
+        )}
+
+        {/* History Section */}
+        {!analysisResult && !analyzing && !loadingHistory && history.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-[13px] font-semibold uppercase mb-3 px-1" style={{ color: "var(--color-slate)", letterSpacing: "0.04em" }}>
+              <LuClock size={12} className="inline mr-1.5 -mt-0.5" />
+              Analysis History
+            </h3>
+            <div className="flex flex-col gap-2">
+              {history.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex items-center gap-3 p-4 rounded-2xl transition-all duration-200 group"
+                  style={{ backgroundColor: "var(--color-cream-lifted)", border: "1px solid var(--color-dust)" }}
+                >
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-[14px] font-bold"
+                    style={{
+                      backgroundColor: SCORE_COLORS[getScoreLevel(item.overallScore)].bg,
+                      color: SCORE_COLORS[getScoreLevel(item.overallScore)].text,
+                    }}
+                  >
+                    {item.overallScore}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{item.fileName}</p>
+                    <p className="text-[11px]" style={{ color: "var(--color-slate)" }}>{moment(item.createdAt).fromNow()}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => viewHistoryItem(item)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+                      style={{ backgroundColor: "var(--color-cream)", color: "var(--color-signal-orange)" }}
+                      title="View results"
+                    >
+                      <LuChevronRight size={14} />
+                    </button>
+                    <button
+                      onClick={() => deleteFromHistory(item._id)}
+                      disabled={deletingId === item._id}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+                      style={{ backgroundColor: "var(--color-cream)", color: "var(--color-slate)" }}
+                      title="Delete"
+                    >
+                      {deletingId === item._id ? <LuLoader size={12} className="animate-spin" /> : <LuTrash2 size={12} />}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

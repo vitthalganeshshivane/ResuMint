@@ -45,6 +45,8 @@ export const API_PATHS = {
 
   ANALYZER: {
     ANALYZE: "/api/analyzer/analyze",
+    HISTORY: "/api/analyzer/history",
+    DELETE_HISTORY: (id) => `/api/analyzer/history/${id}`,
   },
 
   CHATBOT: {
