@@ -5,7 +5,7 @@ import {
   LuUpload,
   LuFileText,
   LuCheck,
-  LuAlertTriangle,
+  LuTriangleAlert,
   LuSearch,
   LuSparkles,
   LuShield,
@@ -629,7 +629,7 @@ const AnalyzerPage = () => {
                     className="w-7 h-7 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}
                   >
-                    <LuAlertTriangle size={14} />
+                    <LuTriangleAlert size={14} />
                   </div>
                   <h3
                     className="text-[14px] font-semibold"
@@ -642,7 +642,7 @@ const AnalyzerPage = () => {
                   {analysisResult.improvements.map((item, i) => (
                     <ListItem
                       key={i}
-                      icon={LuAlertTriangle}
+                      icon={LuTriangleAlert}
                       text={item}
                       color="#D97706"
                       delay={i * 80}
