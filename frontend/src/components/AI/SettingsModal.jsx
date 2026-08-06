@@ -69,8 +69,9 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const fetchSettings = async () => {
     try {
       const response = await axiosInstance.get(API_PATHS.AI.GET_SETTINGS);
-      const { provider: p, baseUrl: b, model: m } = response.data;
+      const { provider: p, apiKey: k, baseUrl: b, model: m } = response.data;
       setProvider(p || "internal");
+      setApiKey(k || "");
       setBaseUrl(b || "");
       setModel(m || "");
     } catch (error) {

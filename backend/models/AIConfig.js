@@ -47,20 +47,21 @@ AIConfigSchema.pre("findOneAndUpdate", function () {
   }
 });
 
-// Decrypt apiKey after reading
-function decryptDoc(doc) {
-  if (doc && doc.apiKey && doc.apiKey.includes(":")) {
-    doc.apiKey = decrypt(doc.apiKey);
+// Instance method to decrypt apiKey
+AIConfigSchema.methods.decryptKey = function () {
+  if (this.apiKey && this.apiKey.includes(":")) {
+    this.apiKey = decrypt(this.apiKey);
+  }
+  return this;
+};
+
+// Static method to find and decrypt
+AIConfigSchema.statics.findDecrypted = async function (query) {
+  const doc = await this.findOne(query);
+  if (doc) {
+    doc.decryptKey();
   }
   return doc;
-}
-
-AIConfigSchema.post("findOne", function (doc) {
-  decryptDoc(doc);
-});
-
-AIConfigSchema.post("findOneAndUpdate", function (doc) {
-  decryptDoc(doc);
-});
+};
 
 module.exports = mongoose.model("AIConfig", AIConfigSchema);

@@ -6,7 +6,7 @@ const INTERNAL_BASE_URL = process.env.OPENAI_BASE_URL || "";
 const INTERNAL_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
 async function getAIConfig(userId) {
-  const config = await AIConfig.findOne({ userId });
+  const config = await AIConfig.findDecrypted({ userId });
   if (!config || config.provider === "internal") {
     return {
       provider: "openai",

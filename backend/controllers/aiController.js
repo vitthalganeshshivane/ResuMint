@@ -6,7 +6,7 @@ const INTERNAL_BASE_URL = process.env.OPENAI_BASE_URL || "";
 const INTERNAL_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
 async function getAIConfig(userId) {
-  const config = await AIConfig.findOne({ userId });
+  const config = await AIConfig.findDecrypted({ userId });
   if (!config || config.provider === "internal") {
     return {
       provider: "openai",
@@ -25,9 +25,10 @@ async function getAIConfig(userId) {
 
 const getSettings = async (req, res) => {
   try {
-    const config = await AIConfig.findOne({ userId: req.user._id });
+    const config = await AIConfig.findDecrypted({ userId: req.user._id });
     res.json({
       provider: config?.provider || "internal",
+      apiKey: config?.apiKey || "",
       hasApiKey: !!config?.apiKey,
       baseUrl: config?.baseUrl || "",
       model: config?.model || "",
@@ -65,7 +66,7 @@ const fetchModels = async (req, res) => {
     let useBaseUrl = baseUrl;
 
     if (!useApiKey) {
-      const config = await AIConfig.findOne({ userId: req.user._id });
+      const config = await AIConfig.findDecrypted({ userId: req.user._id });
       if (config?.apiKey) {
         useApiKey = config.apiKey;
         useBaseUrl = config.baseUrl;
