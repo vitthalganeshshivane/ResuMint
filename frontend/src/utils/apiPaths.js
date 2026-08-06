@@ -39,4 +39,8 @@ export const API_PATHS = {
     SUGGEST_SKILLS: "/api/ai/suggest-skills",
     REVIEW_RESUME: "/api/ai/review-resume",
   },
+
+  ANALYZER: {
+    ANALYZE: "/api/analyzer/analyze",
+  },
 };

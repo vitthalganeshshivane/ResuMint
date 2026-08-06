@@ -1,5 +1,5 @@
 import React from "react";
-import { LuSparkles, LuCheck, LuAlertTriangle, LuInfo } from "react-icons/lu";
+import { LuSparkles, LuCheck, LuInfo } from "react-icons/lu";
 
 const AIReviewModal = ({ isOpen, onClose, reviewData }) => {
   if (!isOpen || !reviewData) return null;

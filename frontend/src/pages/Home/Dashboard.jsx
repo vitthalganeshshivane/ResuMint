@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import { LuCirclePlus } from "react-icons/lu";
+import { LuCirclePlus, LuSearch } from "react-icons/lu";
 import moment from "moment";
 import ResumeSummaryCard from "../../components/cards/ResumeSummaryCard";
 import Modal from "../../components/Modal";
@@ -56,6 +56,41 @@ const Dashboard = () => {
           >
             Add New Resume
           </h3>
+        </div>
+
+        <div
+          className="h-[300px] flex flex-col gap-5 items-center justify-center cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+          style={{
+            backgroundColor: "var(--color-cream-lifted)",
+            borderRadius: "24px",
+            border: "1.5px dashed var(--color-dust)",
+          }}
+          onClick={() => navigate("/analyzer")}
+        >
+          <div
+            className="w-12 h-12 flex items-center justify-center rounded-full"
+            style={{
+              backgroundColor: "var(--color-cream)",
+              color: "var(--color-signal-orange)",
+            }}
+          >
+            <LuSearch size={22} />
+          </div>
+
+          <div className="text-center">
+            <h3
+              className="font-medium text-sm"
+              style={{ color: "var(--color-ink)" }}
+            >
+              Analyze Resume
+            </h3>
+            <p
+              className="text-[11px] mt-1"
+              style={{ color: "var(--color-slate)" }}
+            >
+              Get AI-powered feedback
+            </p>
+          </div>
         </div>
 
         {allResumes?.map((resume) => (

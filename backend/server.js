@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const analyzerRoutes = require("./routes/analyzerRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/analyzer", analyzerRoutes);
 
 app.get("/welcome", (req, res) => {
   res.send("Welcome to the MERN backend server of resume builder webapp");

@@ -8,6 +8,7 @@ import SignUp from "./pages/Auth/SignUp";
 import Dashboard from "./pages/Home/Dashboard";
 import EditResume from "./pages/ResumeUpdate/EditResume";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import AnalyzerPage from "./pages/Analyzer/AnalyzerPage";
 import UserProvider from "./context/userContext";
 import ThemeProvider from "./context/themeContext";
 
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/resume/:resumeId" element={<EditResume />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/analyzer" element={<AnalyzerPage />} />
             </Routes>
           </Router>
         </div>
