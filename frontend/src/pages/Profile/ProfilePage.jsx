@@ -13,6 +13,7 @@ import {
   LuCalendar,
   LuArrowLeft,
   LuCamera,
+  LuLogOut,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -45,6 +46,12 @@ const ProfilePage = () => {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    clearUser();
+    navigate("/");
+  };
 
   useEffect(() => {
     if (user) {
@@ -567,6 +574,20 @@ const ProfilePage = () => {
             </div>
           </div>
         )}
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl text-[13px] font-semibold cursor-pointer transition-all duration-200"
+          style={{
+            backgroundColor: "var(--color-cream-lifted)",
+            color: "var(--color-ink)",
+            border: "1px solid var(--color-dust)",
+          }}
+        >
+          <LuLogOut size={15} />
+          Log Out
+        </button>
 
         {/* Danger Zone */}
         <div

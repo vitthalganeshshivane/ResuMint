@@ -31,23 +31,20 @@ const AIConfigSchema = new mongoose.Schema(
 );
 
 // Encrypt apiKey before saving
-AIConfigSchema.pre("save", function (next) {
+AIConfigSchema.pre("save", function () {
   if (this.isModified("apiKey") && this.apiKey) {
-    // Don't double-encrypt
     if (!this.apiKey.includes(":")) {
       this.apiKey = encrypt(this.apiKey);
     }
   }
-  next();
 });
 
 // Encrypt apiKey on findOneAndUpdate
-AIConfigSchema.pre("findOneAndUpdate", function (next) {
+AIConfigSchema.pre("findOneAndUpdate", function () {
   const update = this.getUpdate();
-  if (update?.apiKey && !update.apiKey.includes(":")) {
+  if (update?.apiKey && typeof update.apiKey === "string" && !update.apiKey.includes(":")) {
     update.apiKey = encrypt(update.apiKey);
   }
-  next();
 });
 
 // Decrypt apiKey after reading
