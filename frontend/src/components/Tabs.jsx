@@ -7,21 +7,32 @@ const Tabs = ({ tabs, activeTab, setActiveTab }) => {
         {tabs.map((tab) => (
           <button
             key={tab.label}
-            className={`relative px-3 md:px-4 py-2 text-sm font-medium ${
-              activeTab === tab.label
-                ? "text-primary"
-                : "text-gray-500 hover:text-gray-700"
-            } cursor-pointer`}
+            className="relative px-4 py-2 text-sm font-medium cursor-pointer transition-all duration-200"
+            style={{
+              color:
+                activeTab === tab.label
+                  ? "var(--color-ink)"
+                  : "var(--color-slate)",
+            }}
             onClick={() => setActiveTab(tab.label)}
           >
-            <div className="flex items-center">
-              <span className="text-[14px] font-semibold text-purple-700">
-                {tab.label}
-              </span>
-            </div>
+            <span
+              className="text-[14px] font-semibold"
+              style={{
+                color:
+                  activeTab === tab.label
+                    ? "var(--color-ink)"
+                    : "var(--color-slate)",
+              }}
+            >
+              {tab.label}
+            </span>
 
             {activeTab === tab.label && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-linear-to-r from-purple-500/85 to-purple-700"></div>
+              <div
+                className="absolute bottom-0 left-0 w-full h-0.5"
+                style={{ backgroundColor: "var(--color-ink)" }}
+              />
             )}
           </button>
         ))}

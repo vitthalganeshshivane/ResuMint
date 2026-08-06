@@ -3,19 +3,14 @@ import { LuTrash, LuUpload, LuUser } from "react-icons/lu";
 
 const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
   const inputRef = useRef(null);
-
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setImage(file);
-
       const preview = URL.createObjectURL(file);
-      if (setPreview) {
-        setPreview(preview);
-      }
-
+      if (setPreview) setPreview(preview);
       setPreviewUrl(preview);
     }
   };
@@ -23,11 +18,7 @@ const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
   const handleRemoveImage = () => {
     setImage(null);
     setPreviewUrl(null);
-
-    if (setPreview) {
-      setPreview(null);
-    }
-
+    if (setPreview) setPreview(null);
     inputRef.current.value = "";
   };
 
@@ -46,15 +37,22 @@ const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
       />
 
       {!image ? (
-        <div className="w-20 h-20 flex items-center justify-center bg-purple-50 rounded-full relative cursor-pointer">
-          <LuUser className="text-4xl text-purple-500" />
+        <div
+          className="w-20 h-20 flex items-center justify-center rounded-full relative cursor-pointer"
+          style={{
+            backgroundColor: "var(--color-cream)",
+            border: "2px dashed var(--color-dust)",
+          }}
+        >
+          <LuUser className="text-3xl" style={{ color: "var(--color-dust)" }} />
 
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center bg-linear-to-r from-purple-500/85 to-purple-700 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+            style={{ backgroundColor: "var(--color-ink)" }}
             onClick={onChooseFile}
           >
-            <LuUpload />
+            <LuUpload size={14} />
           </button>
         </div>
       ) : (
@@ -66,10 +64,11 @@ const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
           />
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer"
+            style={{ backgroundColor: "var(--color-signal-orange)" }}
             onClick={handleRemoveImage}
           >
-            <LuTrash className="" />
+            <LuTrash size={14} />
           </button>
         </div>
       )}

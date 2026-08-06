@@ -1,19 +1,20 @@
 import React from "react";
 
 const Progress = ({ progress = 0, total = 5, color, bgColor }) => {
+  const activeColor = color || "var(--color-ink)";
+  const inactiveColor = bgColor || "var(--color-dust)";
+
   return (
     <div className="flex gap-1.5">
       {[...Array(total)].map((_, index) => {
         return (
           <div
-            className={`w-2 h-2 rounded transition-all ${index < progress ? "bg-cyan-500" : "bg-cyan-100"}`}
+            key={index}
+            className="w-2 h-2 rounded-full transition-all"
             style={{
-              backgroundColor:
-                index < progress
-                  ? color || "rgba(1,1,1,1)"
-                  : bgColor || "rgba(1,1,1,0.1",
+              backgroundColor: index < progress ? activeColor : inactiveColor,
             }}
-          ></div>
+          />
         );
       })}
     </div>

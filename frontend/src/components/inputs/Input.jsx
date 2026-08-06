@@ -10,7 +10,11 @@ const Input = ({ value, onChange, label, placeholder, type }) => {
 
   return (
     <div>
-      <label className="" htmlFor="">
+      <label
+        className="text-xs font-medium"
+        style={{ color: "var(--color-slate)" }}
+        htmlFor=""
+      >
         {label}
       </label>
 
@@ -20,7 +24,8 @@ const Input = ({ value, onChange, label, placeholder, type }) => {
             type === "password" ? (showPassword ? "text" : "password") : type
           }
           placeholder={placeholder}
-          className="w-full bg-transparent outline-none"
+          className="w-full bg-transparent outline-none text-sm"
+          style={{ color: "var(--color-ink)" }}
           value={value}
           onChange={(e) => onChange(e)}
         />
@@ -29,14 +34,16 @@ const Input = ({ value, onChange, label, placeholder, type }) => {
           {type === "password" &&
             (showPassword ? (
               <FaRegEye
-                size={22}
-                className="text-primary cursor-pointer"
+                size={18}
+                className="cursor-pointer"
+                style={{ color: "var(--color-ink)" }}
                 onClick={() => toggleShowPassword()}
               />
             ) : (
               <FaRegEyeSlash
-                size={22}
-                className="text-slate-400 cursor-pointer"
+                size={18}
+                className="cursor-pointer"
+                style={{ color: "var(--color-dust)" }}
                 onClick={() => toggleShowPassword()}
               />
             ))}

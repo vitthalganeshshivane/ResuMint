@@ -2,11 +2,21 @@ import React from "react";
 
 const StepProgress = ({ progress }) => {
   return (
-    <div className="w-full bg-purple-50 h-1 overflow-hidden rounded-[2px]">
+    <div
+      className="w-full h-1 overflow-hidden"
+      style={{
+        backgroundColor: "var(--color-cream)",
+        borderRadius: "2px",
+      }}
+    >
       <div
-        className="h-1 bg-linear-to-r from-purple-500/85 to-purple-700 transition-all rounded"
-        style={{ width: `${progress}%` }}
-      ></div>
+        className="h-1 transition-all"
+        style={{
+          width: `${progress}%`,
+          backgroundColor: "var(--color-ink)",
+          borderRadius: "2px",
+        }}
+      />
     </div>
   );
 };

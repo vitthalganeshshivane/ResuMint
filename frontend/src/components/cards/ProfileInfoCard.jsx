@@ -14,18 +14,36 @@ const ProfileInfoCard = () => {
 
   return (
     user && (
-      <div className="flex items-center">
-        <img
-          src={user?.profileImageUrl}
-          alt=""
-          className="w-11 h-11 bg-gray-300 rounded-full mr-3"
-        />
+      <div className="flex items-center gap-3">
+        <div
+          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+          style={{ backgroundColor: "var(--color-dust)" }}
+        >
+          {user?.profileImageUrl ? (
+            <img
+              src={user.profileImageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-sm font-semibold"
+              style={{ color: "var(--color-slate)" }}
+            >
+              {user.name?.charAt(0)?.toUpperCase()}
+            </div>
+          )}
+        </div>
         <div>
-          <div className="text-[15px] font-bold leading-3">
+          <div
+            className="text-[14px] font-medium leading-3"
+            style={{ color: "var(--color-ink)" }}
+          >
             {user.name || ""}
           </div>
           <button
-            className="text-purple-500 text-sm font-semibold cursor-pointer hover:underline"
+            className="text-[12px] font-medium cursor-pointer hover:underline"
+            style={{ color: "var(--color-signal-orange)" }}
             onClick={handleLogout}
           >
             Logout

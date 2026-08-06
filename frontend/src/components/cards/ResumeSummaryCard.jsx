@@ -7,34 +7,51 @@ const ResumeSummaryCard = ({ imgUrl, title, lastUpdated, onSelect }) => {
   useEffect(() => {
     if (imgUrl) {
       getLightColorFromImage(imgUrl)
-        .then((color) => {
-          setBgColor(color);
-        })
-        .catch(() => {
-          setBgColor("#ffffff");
-        });
+        .then((color) => setBgColor(color))
+        .catch(() => setBgColor("#ffffff"));
     }
   }, [imgUrl]);
 
   return (
     <div
       onClick={onSelect}
-      className="h-[300px] flex flex-col items-center justify-between bg-white rounded-lg border border-gray-200  hover:border-purple-300 overflow-hidden cursor-pointer"
-      style={{ backgroundColor: bgColor }}
+      className="h-[300px] flex flex-col items-center justify-between overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+      style={{
+        backgroundColor: bgColor,
+        borderRadius: "24px",
+        border: "1px solid var(--color-dust)",
+      }}
     >
-      <div className="p-4">
+      <div className="p-4 w-full">
         {imgUrl ? (
-          <img src={imgUrl} className="w-[100%] h-[200px] rounded" alt="" />
+          <img
+            src={imgUrl}
+            className="w-full h-[200px] object-cover"
+            style={{ borderRadius: "16px" }}
+            alt=""
+          />
         ) : (
-          <div className=""></div>
+          <div className="w-full h-[200px]" />
         )}
       </div>
 
-      <div className="w-full bg-white px-4 py-3">
-        <h5 className="text-sm font-medium truncate overflow-hidden whitespace-nowrap">
+      <div
+        className="w-full px-5 py-3"
+        style={{
+          backgroundColor: "var(--color-cream-lifted)",
+          borderTop: "1px solid var(--color-dust)",
+        }}
+      >
+        <h5
+          className="text-sm font-medium truncate overflow-hidden whitespace-nowrap"
+          style={{ color: "var(--color-ink)" }}
+        >
           {title}
         </h5>
-        <p className="text-xs font-medium text-gray-500 mt-0.5">
+        <p
+          className="text-xs mt-0.5"
+          style={{ color: "var(--color-slate)", fontWeight: 450 }}
+        >
           Last Updated: {lastUpdated}
         </p>
       </div>
