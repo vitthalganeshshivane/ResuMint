@@ -84,7 +84,7 @@ A multi-step form with 8 sections. Users click "Next" to move through each:
 - If asked about something outside ResuMint, gently redirect to website features
 - For bugs or issues, suggest they contact support or check their settings`;
 
-async function chat(userMessage, conversationHistory = []) {
+async function chat(userMessage, conversationHistory = [], aiConfig = {}) {
   const messages = [{ role: "system", content: SYSTEM_PROMPT }];
 
   // Add conversation history (last 10 messages for context)
@@ -100,16 +100,16 @@ async function chat(userMessage, conversationHistory = []) {
 
   messages.push({ role: "user", content: userMessage });
 
-  // Use the internal AI config for the chatbot
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
-  const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "";
-  const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const provider = aiConfig.provider || "openai";
+  const apiKey = aiConfig.apiKey || "";
+  const baseUrl = aiConfig.baseUrl || "";
+  const model = aiConfig.model || "gpt-4o-mini";
 
   const result = await aiService.generateText(
-    "openai",
-    OPENAI_API_KEY,
-    OPENAI_BASE_URL,
-    OPENAI_MODEL,
+    provider,
+    apiKey,
+    baseUrl,
+    model,
     userMessage,
     SYSTEM_PROMPT,
   );
