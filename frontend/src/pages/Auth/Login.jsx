@@ -42,25 +42,31 @@ const Login = ({ setCurrentPage }) => {
         updateUser(response.data);
         navigate("/dashboard");
       }
-      console.log("Login");
     } catch (error) {
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
       } else {
         setError("Something went wrong. Please try again");
       }
-      console.log(error);
     }
   };
 
   return (
-    <div className="w-[90vw] md:w-[33vw] p-7 flex flex-col justify-center">
-      <h3 className="text-lg font-semibold text-black">Welcome Back</h3>
-      <p className="text-xs text-slate-700 mt-[5px] mb-6">
+    <div className="w-[90vw] md:w-[380px] p-8 flex flex-col justify-center">
+      <h3
+        className="text-xl font-medium"
+        style={{ color: "var(--color-ink)", letterSpacing: "-0.01em" }}
+      >
+        Welcome Back
+      </h3>
+      <p
+        className="text-sm mt-1 mb-7"
+        style={{ color: "var(--color-slate)", fontWeight: 450 }}
+      >
         Please enter your details to log in
       </p>
 
-      <form onSubmit={handleLogin} action="">
+      <form onSubmit={handleLogin}>
         <Input
           value={email}
           onChange={({ target }) => setEmail(target.value)}
@@ -72,24 +78,29 @@ const Login = ({ setCurrentPage }) => {
         <Input
           value={password}
           onChange={({ target }) => setPassword(target.value)}
-          label="Address"
+          label="Password"
           placeholder="Min 8 Characters"
           type="password"
         />
 
-        {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+        {error && (
+          <p className="text-xs pb-2.5" style={{ color: "var(--color-signal-orange)" }}>
+            {error}
+          </p>
+        )}
 
         <button type="submit" className="btn-primary">
           LOGIN
         </button>
 
-        <p className="text-[13px] text-slate-800 mt-3">
-          Don't have an account ?{" "}
+        <p className="text-[13px] mt-4" style={{ color: "var(--color-slate)" }}>
+          Don't have an account?{" "}
           <button
-            className="font-medium text-primary underline cursor-pointer"
+            className="font-medium cursor-pointer underline"
+            style={{ color: "var(--color-ink)" }}
             onClick={() => setCurrentPage("signup")}
           >
-            Signup
+            Sign up
           </button>
         </p>
       </form>
