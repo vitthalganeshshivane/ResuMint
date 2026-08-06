@@ -1,10 +1,38 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Urbanist", sans-serif;
+  --font-display: "Inter", sans-serif;
   --breakpoint-3xl: 1920px;
-  --color-primary: #9328e7;
+}
+
+:root {
+  --color-cream: #F3F0EE;
+  --color-cream-lifted: #FCFBFA;
+  --color-ink: #141413;
+  --color-ink-soft: #262627;
+  --color-signal-orange: #CF4500;
+  --color-signal-orange-light: #F37338;
+  --color-slate: #696969;
+  --color-dust: #D1CDC7;
+  --color-bone: #F4F4F4;
+  --color-dark-bg: #0E0E0D;
+  --color-dark-surface: #1A1A19;
+  --color-dark-surface-lifted: #242423;
+  --color-dark-border: #333332;
+}
+
+html.dark {
+  color-scheme: dark;
+  --color-cream: #0E0E0D;
+  --color-cream-lifted: #1A1A19;
+  --color-ink: #E8E5E0;
+  --color-ink-soft: #C8C5BF;
+  --color-signal-orange: #F37338;
+  --color-signal-orange-light: #CF4500;
+  --color-slate: #9A9A9A;
+  --color-dust: #333332;
+  --color-bone: #1A1A19;
 }
 
 @layer base {
@@ -13,55 +41,116 @@
   }
 
   body {
-    background-color: #fcfbfc;
+    background-color: var(--color-cream);
+    color: var(--color-ink);
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-.custom-scrollbar::--webkit-scrollbar {
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
 
-.custom-scrollbar::--webkit-scrollbar-thumb {
-  background-color: rgba(100, 1000, 100, 0.4);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-dust);
   border-radius: 10px;
 }
 
-.custom-scrollbar::--webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
 @layer utilities {
   @keyframes text-shine {
-    0% {
-      background-position: 0% 50%;
-    }
-    100% {
-      background-position: 100% 50%;
-    }
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
   .animate-text-shine {
     animation: text-shine 3s ease-in-out infinite alternate;
   }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
 }
 
+/* Input Box */
 .input-box {
-  @apply w-full flex justify-between gap-3 text-sm text-black bg-gray-50/50 rounded px-4 py-3 mb-4 mt-3 border border-gray-100 outline-none focus-within:border-purple-300;
+  @apply w-full flex justify-between gap-3 text-sm rounded-xl px-4 py-3 mb-4 mt-2 border outline-none transition-all duration-200;
+  border-color: var(--color-dust);
+  background-color: var(--color-cream-lifted);
+  color: var(--color-ink);
 }
 
+.input-box:focus-within {
+  border-color: var(--color-ink);
+  box-shadow: 0 0 0 1px var(--color-ink);
+}
+
+.input-box input::placeholder {
+  color: var(--color-slate);
+}
+
+/* Primary Button - Ink Pill */
 .btn-primary {
-  @apply w-full text-sm font-medium text-white bg-black shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-purple-600/15 hover:text-black cursor-pointer;
+  @apply w-full text-sm font-medium rounded-xl cursor-pointer transition-all duration-200;
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  padding: 10px 24px;
+  border: 1.5px solid var(--color-ink);
 }
 
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+/* Small Button - Secondary */
 .btn-small {
-  @apply flex items-center gap-2 text-[13px] font-semibold text-white bg-linear-to-r from-purple-500/85 to-purple-700 px-5 py-1.5 rounded cursor-pointer;
+  @apply flex items-center gap-2 text-[13px] font-semibold rounded-xl cursor-pointer transition-all duration-200;
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  padding: 6px 18px;
+  border: 1.5px solid var(--color-ink);
 }
 
+.btn-small:hover {
+  opacity: 0.85;
+}
+
+/* Small Button Light - Outlined Pill */
 .btn-small-light {
-  @apply flex items-center gap-2 text-[12px] font-semibold text-purple-800 bg-purple-600/15 border border-purple-50 hover:border-purple-400 px-3 py-1.5 rounded cursor-pointer;
+  @apply flex items-center gap-2 text-[12px] font-semibold rounded-xl cursor-pointer transition-all duration-200;
+  background-color: var(--color-cream-lifted);
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-dust);
+  padding: 6px 16px;
 }
 
+.btn-small-light:hover {
+  border-color: var(--color-ink);
+}
+
+/* Form Input */
 .form-input {
-  @apply w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 placeholder:text-gray-500 focus-within:border-purple-300;
+  @apply w-full text-sm outline-none rounded-xl px-3 py-3 mt-2 transition-all duration-200;
+  color: var(--color-ink);
+  background-color: var(--color-cream-lifted);
+  border: 1px solid var(--color-dust);
+}
+
+.form-input::placeholder {
+  color: var(--color-slate);
+}
+
+.form-input:focus {
+  border-color: var(--color-ink);
+  box-shadow: 0 0 0 1px var(--color-ink);
 }
