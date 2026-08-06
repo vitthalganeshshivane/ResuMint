@@ -15,8 +15,9 @@ const ProfileInfoCard = () => {
   return (
     user && (
       <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+        <button
+          onClick={() => navigate("/profile")}
+          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 hover:opacity-80"
           style={{ backgroundColor: "var(--color-dust)" }}
         >
           {user?.profileImageUrl ? (
@@ -33,14 +34,15 @@ const ProfileInfoCard = () => {
               {user.name?.charAt(0)?.toUpperCase()}
             </div>
           )}
-        </div>
+        </button>
         <div>
-          <div
-            className="text-[14px] font-medium leading-3"
+          <button
+            className="text-[14px] font-medium leading-3 cursor-pointer hover:underline text-left"
             style={{ color: "var(--color-ink)" }}
+            onClick={() => navigate("/profile")}
           >
             {user.name || ""}
-          </div>
+          </button>
           <button
             className="text-[12px] font-medium cursor-pointer hover:underline"
             style={{ color: "var(--color-signal-orange)" }}

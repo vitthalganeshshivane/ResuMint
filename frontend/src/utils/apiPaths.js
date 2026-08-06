@@ -5,6 +5,10 @@ export const API_PATHS = {
     REGISTER: "/api/auth/register",
     LOGIN: "/api/auth/login",
     GET_PROFILE: "/api/auth/profile",
+    UPDATE_PROFILE: "/api/auth/profile",
+    CHANGE_PASSWORD: "/api/auth/change-password",
+    GET_STATS: "/api/auth/stats",
+    DELETE_ACCOUNT: "/api/auth/account",
   },
 
   RESUME: {

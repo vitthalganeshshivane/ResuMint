@@ -4,6 +4,10 @@ const {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
+  changePassword,
+  getAccountStats,
+  deleteAccount,
 } = require("../controllers/authController");
 const { protect } = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
@@ -15,16 +19,10 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile", protect, getUserProfile);
-
-// router.post("/upload-image", upload.single("image"), (req, res) => {
-//   if (!req.file) {
-//     return res.status(400).json({ message: "No file uploaded" });
-//   }
-
-//   const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-
-//   res.status(200).json({ imageUrl });
-// });
+router.put("/profile", protect, updateUserProfile);
+router.put("/change-password", protect, changePassword);
+router.get("/stats", protect, getAccountStats);
+router.delete("/account", protect, deleteAccount);
 
 router.post(
   "/upload-image",
@@ -38,10 +36,6 @@ router.post(
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: "user-profiles" },
         (error, result) => {
-          // if (error) {
-          //   return res.status(500).json({ message: "Upload failed" });
-          // }
-
           if (error) {
             console.error("Cloudinary Error:", error);
             return res.status(500).json({
