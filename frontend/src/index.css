@@ -140,10 +140,12 @@ html.dark {
 
 /* Form Input */
 .form-input {
-  @apply w-full text-sm outline-none rounded-xl px-3 py-3 mt-2 transition-all duration-200;
+  @apply w-full text-sm outline-none rounded-xl py-3 mt-2 transition-all duration-200;
   color: var(--color-ink);
   background-color: var(--color-cream-lifted);
   border: 1px solid var(--color-dust);
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 .form-input::placeholder {

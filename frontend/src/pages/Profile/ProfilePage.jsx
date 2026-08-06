@@ -340,7 +340,7 @@ const ProfilePage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="form-input pl-10"
+                    className="form-input" style={{ paddingLeft: "2.5rem" }}
                     placeholder="Your name"
                     required
                   />
@@ -366,7 +366,7 @@ const ProfilePage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="form-input pl-10"
+                    className="form-input" style={{ paddingLeft: "2.5rem" }}
                     placeholder="your@email.com"
                     required
                   />
@@ -427,7 +427,7 @@ const ProfilePage = () => {
                         currentPassword: e.target.value,
                       })
                     }
-                    className="form-input pl-10"
+                    className="form-input" style={{ paddingLeft: "2.5rem" }}
                     placeholder="Enter current password"
                     required
                   />
@@ -457,7 +457,7 @@ const ProfilePage = () => {
                           newPassword: e.target.value,
                         })
                       }
-                      className="form-input pl-10"
+                      className="form-input" style={{ paddingLeft: "2.5rem" }}
                       placeholder="Min 6 characters"
                       required
                     />
@@ -486,7 +486,7 @@ const ProfilePage = () => {
                           confirmPassword: e.target.value,
                         })
                       }
-                      className="form-input pl-10"
+                      className="form-input" style={{ paddingLeft: "2.5rem" }}
                       placeholder="Repeat new password"
                       required
                     />
