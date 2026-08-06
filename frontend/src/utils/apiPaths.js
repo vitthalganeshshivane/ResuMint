@@ -43,4 +43,8 @@ export const API_PATHS = {
   ANALYZER: {
     ANALYZE: "/api/analyzer/analyze",
   },
+
+  CHATBOT: {
+    SEND: "/api/chatbot",
+  },
 };
