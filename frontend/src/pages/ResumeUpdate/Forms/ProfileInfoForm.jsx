@@ -1,8 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfilePhotoSelector from "../../../components/inputs/ProfilePhotoSelector";
 import Input from "../../../components/inputs/Input";
+import AISuggestionButton from "../../../components/AI/AISuggestionButton";
+import AIResultModal from "../../../components/AI/AIResultModal";
+import axiosInstance from "../../../utils/axiosInstance";
+import { API_PATHS } from "../../../utils/apiPaths";
 
 const ProfileInfoForm = ({ profileData, updateSection, onNext }) => {
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiResults, setAiResults] = useState("");
+  const [loadingAI, setLoadingAI] = useState(false);
+
+  const handleGenerateSummary = async () => {
+    setLoadingAI(true);
+    try {
+      const response = await axiosInstance.post(API_PATHS.AI.GENERATE_SUMMARY, {
+        fullName: profileData.fullName || "",
+        designation: profileData.designation || "",
+      });
+      setAiResults(response.data.result);
+      setShowAIModal(true);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoadingAI(false);
+    }
+  };
+
   return (
     <div className="px-6 pt-6">
       <h2
@@ -53,9 +77,21 @@ const ProfileInfoForm = ({ profileData, updateSection, onNext }) => {
               value={profileData.summary || ""}
               onChange={({ target }) => updateSection("summary", target.value)}
             />
+            <AISuggestionButton
+              onClick={handleGenerateSummary}
+              label="Generate Summary with AI"
+            />
           </div>
         </div>
       </div>
+
+      <AIResultModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        title="AI-Generated Summaries"
+        results={aiResults}
+        onSelect={(text) => updateSection("summary", text)}
+      />
     </div>
   );
 };

@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../../components/inputs/Input";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
+import AISuggestionButton from "../../../components/AI/AISuggestionButton";
+import AIResultModal from "../../../components/AI/AIResultModal";
+import axiosInstance from "../../../utils/axiosInstance";
+import { API_PATHS } from "../../../utils/apiPaths";
 
 const WorkExperienceForm = ({
   WorkExperience,
@@ -8,6 +12,24 @@ const WorkExperienceForm = ({
   addArrayItem,
   removeArrayItem,
 }) => {
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiResults, setAiResults] = useState("");
+  const [aiTargetIndex, setAiTargetIndex] = useState(null);
+
+  const handleImproveBullets = async (index) => {
+    const exp = WorkExperience[index];
+    setAiTargetIndex(index);
+    const response = await axiosInstance.post(API_PATHS.AI.IMPROVE_BULLETS, {
+      company: exp.company || "",
+      role: exp.role || "",
+      startDate: exp.startDate || "",
+      endDate: exp.endDate || "",
+      description: exp.description || "",
+    });
+    setAiResults(response.data.result);
+    setShowAIModal(true);
+  };
+
   return (
     <div className="px-6 pt-6">
       <h2
@@ -22,9 +44,7 @@ const WorkExperienceForm = ({
             <div
               key={index}
               className="p-4 rounded-2xl relative"
-              style={{
-                border: "1px solid var(--color-dust)",
-              }}
+              style={{ border: "1px solid var(--color-dust)" }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
@@ -84,6 +104,10 @@ const WorkExperienceForm = ({
                     updateArrayItem(index, "description", target.value);
                   }}
                 />
+                <AISuggestionButton
+                  onClick={() => handleImproveBullets(index)}
+                  label="Improve with AI"
+                />
               </div>
 
               {WorkExperience.length > 1 && (
@@ -120,6 +144,21 @@ const WorkExperienceForm = ({
           <LuPlus /> Add Work Experience
         </button>
       </div>
+
+      <AIResultModal
+        isOpen={showAIModal}
+        onClose={() => {
+          setShowAIModal(false);
+          setAiTargetIndex(null);
+        }}
+        title="AI-Improved Bullet Points"
+        results={aiResults}
+        onSelect={(text) => {
+          if (aiTargetIndex !== null) {
+            updateArrayItem(aiTargetIndex, "description", text);
+          }
+        }}
+      />
     </div>
   );
 };

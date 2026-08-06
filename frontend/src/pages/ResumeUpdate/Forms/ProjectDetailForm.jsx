@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../../components/inputs/Input";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
+import AISuggestionButton from "../../../components/AI/AISuggestionButton";
+import AIResultModal from "../../../components/AI/AIResultModal";
+import axiosInstance from "../../../utils/axiosInstance";
+import { API_PATHS } from "../../../utils/apiPaths";
 
 const ProjectDetailForm = ({
   projectInfo,
@@ -8,6 +12,22 @@ const ProjectDetailForm = ({
   addArrayItem,
   removeArrayItem,
 }) => {
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiResults, setAiResults] = useState("");
+  const [aiTargetIndex, setAiTargetIndex] = useState(null);
+
+  const handleEnhanceProject = async (index) => {
+    const project = projectInfo[index];
+    setAiTargetIndex(index);
+    const response = await axiosInstance.post(API_PATHS.AI.ENHANCE_PROJECT, {
+      title: project.title || "",
+      description: project.description || "",
+      technologies: "",
+    });
+    setAiResults(response.data.result);
+    setShowAIModal(true);
+  };
+
   return (
     <div className="px-6 pt-6">
       <h2
@@ -52,6 +72,10 @@ const ProjectDetailForm = ({
                   onChange={({ target }) =>
                     updateArrayItem(index, "description", target.value)
                   }
+                />
+                <AISuggestionButton
+                  onClick={() => handleEnhanceProject(index)}
+                  label="Enhance with AI"
                 />
               </div>
 
@@ -109,6 +133,21 @@ const ProjectDetailForm = ({
           <LuPlus /> Add Project
         </button>
       </div>
+
+      <AIResultModal
+        isOpen={showAIModal}
+        onClose={() => {
+          setShowAIModal(false);
+          setAiTargetIndex(null);
+        }}
+        title="AI-Enhanced Project Description"
+        results={aiResults}
+        onSelect={(text) => {
+          if (aiTargetIndex !== null) {
+            updateArrayItem(aiTargetIndex, "description", text);
+          }
+        }}
+      />
     </div>
   );
 };

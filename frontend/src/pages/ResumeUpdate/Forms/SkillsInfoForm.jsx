@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../../components/inputs/Input";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
 import RatingInput from "../../../components/ResumeSections/RatingInput";
+import AISuggestionButton from "../../../components/AI/AISuggestionButton";
+import AIResultModal from "../../../components/AI/AIResultModal";
+import axiosInstance from "../../../utils/axiosInstance";
+import { API_PATHS } from "../../../utils/apiPaths";
 
 const SkillsInfoForm = ({
   skillsInfo,
@@ -9,6 +13,30 @@ const SkillsInfoForm = ({
   addArrayItem,
   removeArrayItem,
 }) => {
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiResults, setAiResults] = useState("");
+
+  const handleSuggestSkills = async () => {
+    const role = skillsInfo.find((s) => s.name)?.name || "";
+    const response = await axiosInstance.post(API_PATHS.AI.SUGGEST_SKILLS, {
+      role: "professional",
+      existingSkills: skillsInfo.map((s) => s.name).filter(Boolean),
+    });
+    setAiResults(response.data.result);
+    setShowAIModal(true);
+  };
+
+  const handleSelectSkills = (text) => {
+    const newSkills = text
+      .split(/[\n,]+/)
+      .map((s) => s.trim().replace(/^\d+\.\s*/, "").replace(/^-\s*/, ""))
+      .filter((s) => s.length > 1 && !skillsInfo.some((existing) => existing.name === s));
+
+    newSkills.forEach((skill) => {
+      addArrayItem({ name: skill, progress: 60 });
+    });
+  };
+
   return (
     <div className="px-6 pt-6">
       <h2
@@ -69,6 +97,12 @@ const SkillsInfoForm = ({
           </div>
         ))}
 
+        <AISuggestionButton
+          onClick={handleSuggestSkills}
+          label="Suggest Skills with AI"
+          size="md"
+        />
+
         <button
           type="button"
           className="self-start flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200"
@@ -87,6 +121,14 @@ const SkillsInfoForm = ({
           <LuPlus /> Add Skill
         </button>
       </div>
+
+      <AIResultModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        title="AI-Suggested Skills"
+        results={aiResults}
+        onSelect={handleSelectSkills}
+      />
     </div>
   );
 };

@@ -19,4 +19,20 @@ export const API_PATHS = {
   IMAGE: {
     UPLOAD_IMAGE: "/api/auth/upload-image",
   },
+
+  AI: {
+    GET_SETTINGS: "/api/ai/settings",
+    SAVE_SETTINGS: "/api/ai/settings",
+    FETCH_MODELS: (provider, apiKey, baseUrl) => {
+      const params = new URLSearchParams({ provider });
+      if (apiKey) params.append("apiKey", apiKey);
+      if (baseUrl) params.append("baseUrl", baseUrl);
+      return `/api/ai/models?${params.toString()}`;
+    },
+    GENERATE_SUMMARY: "/api/ai/generate-summary",
+    IMPROVE_BULLETS: "/api/ai/improve-bullets",
+    ENHANCE_PROJECT: "/api/ai/enhance-project",
+    SUGGEST_SKILLS: "/api/ai/suggest-skills",
+    REVIEW_RESUME: "/api/ai/review-resume",
+  },
 };

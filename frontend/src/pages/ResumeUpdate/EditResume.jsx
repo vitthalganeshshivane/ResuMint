@@ -6,6 +6,7 @@ import {
   LuDownload,
   LuPalette,
   LuSave,
+  LuSparkles,
   LuTrash2,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
@@ -31,6 +32,7 @@ import {
 } from "../../utils/helper";
 import Modal from "../../components/Modal";
 import ThemeSelector from "./ThemeSelector";
+import AIReviewModal from "../../components/AI/AIReviewModal";
 
 const EditResume = () => {
   const { resumeId } = useParams();
@@ -114,6 +116,24 @@ const EditResume = () => {
   });
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [openAIReview, setOpenAIReview] = useState(false);
+  const [reviewData, setReviewData] = useState(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const handleAIReview = async () => {
+    setReviewLoading(true);
+    try {
+      const response = await axiosInstance.post(API_PATHS.AI.REVIEW_RESUME, {
+        resumeData,
+      });
+      setReviewData(response.data.result);
+      setOpenAIReview(true);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "AI review failed");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
 
   const validateAndNext = (e) => {
     const errors = [];
@@ -567,6 +587,17 @@ const EditResume = () => {
               <span className="hidden md:block">Theme</span>
             </button>
 
+            <button
+              className="btn-small-light"
+              onClick={handleAIReview}
+              disabled={reviewLoading}
+            >
+              <LuSparkles className="text-[16px]" />
+              <span className="hidden md:block">
+                {reviewLoading ? "Reviewing..." : "AI Review"}
+              </span>
+            </button>
+
             <button className="btn-small-light" onClick={handleDeleteResume}>
               <LuTrash2 className="text-[16px]" />
               <span className="hidden md:block">Delete</span>
@@ -696,6 +727,12 @@ const EditResume = () => {
           />
         </div>
       </Modal>
+
+      <AIReviewModal
+        isOpen={openAIReview}
+        onClose={() => setOpenAIReview(false)}
+        reviewData={reviewData}
+      />
     </DashboardLayout>
   );
 };
