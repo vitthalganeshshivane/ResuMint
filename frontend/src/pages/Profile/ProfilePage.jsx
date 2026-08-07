@@ -18,6 +18,9 @@ import {
   LuChevronDown,
   LuChevronUp,
   LuX,
+  LuCrown,
+  LuZap,
+  LuCheck,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -310,6 +313,87 @@ const ProfilePage = () => {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Current Plan Card */}
+        <div
+          className="p-5 mb-5"
+          style={{
+            backgroundColor: user?.plan === "max" ? "var(--color-ink)" : user?.plan === "pro" ? "var(--color-cream-lifted)" : "var(--color-cream-lifted)",
+            borderRadius: "24px",
+            border: user?.plan === "max" ? "2px solid var(--color-ink)" : user?.plan === "pro" ? "2px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 flex items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: user?.plan === "max" ? "var(--color-signal-orange)" : user?.plan === "pro" ? "#FEF3C7" : "var(--color-cream)",
+                  color: user?.plan === "max" ? "var(--color-cream)" : user?.plan === "pro" ? "var(--color-signal-orange)" : "var(--color-slate)",
+                }}
+              >
+                {user?.plan === "max" ? <LuCrown size={18} /> : user?.plan === "pro" ? <LuZap size={18} /> : <LuCheck size={18} />}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[14px] font-semibold"
+                    style={{ color: user?.plan === "max" ? "var(--color-cream)" : "var(--color-ink)" }}
+                  >
+                    {user?.plan === "max" ? "Max Plan" : user?.plan === "pro" ? "Pro Plan" : "Free Plan"}
+                  </span>
+                  <span
+                    className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: user?.plan === "max" ? "var(--color-signal-orange)" : user?.plan === "pro" ? "#FEF3C7" : "var(--color-cream)",
+                      color: user?.plan === "max" ? "var(--color-cream)" : user?.plan === "pro" ? "#D97706" : "var(--color-slate)",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {user?.plan || "free"}
+                  </span>
+                </div>
+                <p
+                  className="text-[12px] mt-0.5"
+                  style={{ color: user?.plan === "max" ? "#9A9A9A" : "var(--color-slate)" }}
+                >
+                  {user?.plan === "max" ? "All features unlocked" : user?.plan === "pro" ? "AI features & unlimited resumes" : "Basic resume building"}
+                </p>
+              </div>
+            </div>
+            {(!user?.plan || user?.plan === "free") && (
+              <button
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-semibold cursor-pointer transition-all duration-200"
+                style={{
+                  backgroundColor: "var(--color-signal-orange)",
+                  color: "var(--color-cream)",
+                }}
+                onClick={() => navigate("/")}
+              >
+                <LuZap size={12} />
+                Upgrade
+              </button>
+            )}
+          </div>
+          {user?.plan === "pro" && (
+            <div className="flex flex-wrap gap-2 mt-3 pt-3" style={{ borderTop: "1px solid var(--color-dust)" }}>
+              {["Unlimited resumes", "AI suggestions", "Resume analyzer", "All templates"].map((f) => (
+                <span key={f} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "var(--color-cream)", color: "var(--color-ink)" }}>
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+          {user?.plan === "max" && (
+            <div className="flex flex-wrap gap-2 mt-3 pt-3" style={{ borderTop: "1px solid var(--color-dark-border)" }}>
+              {["Everything in Pro", "Custom branding", "Priority support", "Early access"].map((f) => (
+                <span key={f} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "var(--color-dark-surface-lifted)", color: "var(--color-cream)" }}>
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats Grid */}
