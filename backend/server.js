@@ -9,6 +9,7 @@ const aiRoutes = require("./routes/aiRoutes");
 const analyzerRoutes = require("./routes/analyzerRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
 const analysisHistoryRoutes = require("./routes/analysisHistoryRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/analyzer", analyzerRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/analyzer/history", analysisHistoryRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.get("/welcome", (req, res) => {
   res.send("Welcome to the MERN backend server of resume builder webapp");

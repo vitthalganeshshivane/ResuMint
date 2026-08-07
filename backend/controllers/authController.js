@@ -31,6 +31,7 @@ const registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       profileImageUrl: user.profileImageUrl,
+      plan: user.plan || "free",
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -60,6 +61,7 @@ const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       profileImageUrl: user.profileImageUrl,
+      plan: user.plan || "free",
       token: generateToken(user._id),
     });
   } catch (error) {

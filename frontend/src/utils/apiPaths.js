@@ -52,4 +52,10 @@ export const API_PATHS = {
   CHATBOT: {
     SEND: "/api/chatbot",
   },
+
+  PAYMENT: {
+    CREATE_ORDER: "/api/payment/create-order",
+    VERIFY: "/api/payment/verify",
+    SUBSCRIPTION: "/api/payment/subscription",
+  },
 };

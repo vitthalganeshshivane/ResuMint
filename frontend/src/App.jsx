@@ -9,6 +9,7 @@ import Dashboard from "./pages/Home/Dashboard";
 import EditResume from "./pages/ResumeUpdate/EditResume";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import AnalyzerPage from "./pages/Analyzer/AnalyzerPage";
+import PaymentVerify from "./pages/Payment/PaymentVerify";
 import UserProvider from "./context/userContext";
 import ThemeProvider from "./context/themeContext";
 
@@ -33,6 +34,7 @@ const App = () => {
               <Route path="/resume/:resumeId" element={<EditResume />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/analyzer" element={<AnalyzerPage />} />
+              <Route path="/payment/verify" element={<PaymentVerify />} />
             </Routes>
           </Router>
         </div>

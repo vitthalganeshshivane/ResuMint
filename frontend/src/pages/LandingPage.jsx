@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import HERO_IMG from "../../public/Hero_Img.png";
 import Login from "../pages/Auth/Login";
 import SignUp from "../pages/Auth/SignUp";
+import PlanSelection from "../pages/Pricing/PlanSelection";
 import Modal from "../components/Modal";
 import { UserContext } from "../context/userContext";
 import { useTheme } from "../context/themeContext";
@@ -231,6 +232,15 @@ const LandingPage = () => {
         <div>
           {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
           {currentPage === "signup" && <SignUp setCurrentPage={setCurrentPage} />}
+          {currentPage === "plan" && (
+            <PlanSelection
+              onPlanSelected={() => {
+                setOpenAuthModel(false);
+                setCurrentPage("login");
+                navigate("/dashboard");
+              }}
+            />
+          )}
         </div>
       </Modal>
     </div>
