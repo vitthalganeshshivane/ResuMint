@@ -87,6 +87,25 @@ async function generateText(provider, apiKey, baseUrl, model, prompt, systemProm
   return response.choices[0].message.content;
 }
 
+async function generateWithMessages(provider, apiKey, baseUrl, model, messages) {
+  const config = PROVIDER_CONFIGS[provider];
+  if (!config) throw new Error(`Unknown provider: ${provider}`);
+
+  const useModel = model || config.defaultModel;
+  if (!useModel) throw new Error("No model specified");
+
+  const client = createClient(provider, apiKey, baseUrl);
+
+  const response = await client.chat.completions.create({
+    model: useModel,
+    messages,
+    temperature: 0.7,
+    max_tokens: 1024,
+  });
+
+  return response.choices[0].message.content;
+}
+
 async function generateSummary(provider, apiKey, baseUrl, model, data) {
   const systemPrompt = `You are a professional resume writer. Generate a concise, impactful professional summary.
 Rules:
@@ -237,6 +256,7 @@ module.exports = {
   createClient,
   fetchModels,
   generateText,
+  generateWithMessages,
   generateSummary,
   improveBullets,
   enhanceProject,
