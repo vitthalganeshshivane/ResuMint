@@ -1,15 +1,15 @@
 const AIConfig = require("../models/AIConfig");
 const aiService = require("../services/aiService");
 
-const INTERNAL_API_KEY = process.env.OPENAI_API_KEY || "";
-const INTERNAL_BASE_URL = process.env.OPENAI_BASE_URL || "";
-const INTERNAL_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+const INTERNAL_API_KEY = process.env.NVIDIA_NIM_API_KEY || "";
+const INTERNAL_BASE_URL = process.env.NVIDIA_NIM_BASE_URL || "https://integrate.api.nvidia.com/v1";
+const INTERNAL_MODEL = process.env.NVIDIA_NIM_MODEL || "nvidia/nemotron-mini-4b-instruct";
 
 async function getAIConfig(userId) {
   const config = await AIConfig.findDecrypted({ userId });
   if (!config || config.provider === "internal") {
     return {
-      provider: "openai",
+      provider: "nvidia",
       apiKey: INTERNAL_API_KEY,
       baseUrl: INTERNAL_BASE_URL,
       model: INTERNAL_MODEL,

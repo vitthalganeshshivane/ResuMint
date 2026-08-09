@@ -7,9 +7,9 @@ import { API_PATHS } from "../../utils/apiPaths";
 const PROVIDERS = [
   {
     id: "internal",
-    name: "Internal (Free)",
-    description: "Use the built-in API key",
-    models: ["gpt-4o-mini"],
+    name: "NVIDIA NIM (Free)",
+    description: "Built-in AI, no key needed",
+    models: ["nvidia/nemotron-mini-4b-instruct"],
   },
   {
     id: "openai",
