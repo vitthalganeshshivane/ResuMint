@@ -21,6 +21,7 @@ import {
   LuCrown,
   LuZap,
   LuCheck,
+  LuLoader,
 } from "react-icons/lu";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -28,6 +29,7 @@ import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { UserContext } from "../../context/userContext";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
+import { load } from "@cashfreepayments/cashfree-js";
 
 const ProfilePage = () => {
   const { user, updateUser, clearUser } = useContext(UserContext);
@@ -60,6 +62,45 @@ const ProfilePage = () => {
   const [skillForm, setSkillForm] = useState({ name: "", progress: 60 });
   const [projectForm, setProjectForm] = useState({ title: "", description: "", github: "", liveDemo: "" });
   const [experienceForm, setExperienceForm] = useState({ company: "", role: "", startDate: "", endDate: "", description: "" });
+
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgrading, setUpgrading] = useState(null);
+  const [cashfree, setCashfree] = useState(null);
+
+  useEffect(() => {
+    const initCashfree = async () => {
+      const cf = await load({
+        mode: import.meta.env.VITE_CASHFREE_MODE || "sandbox",
+      });
+      setCashfree(cf);
+    };
+    initCashfree();
+  }, []);
+
+  const handleUpgrade = async (planId) => {
+    if (!cashfree) {
+      toast.error("Payment system is loading. Please wait.");
+      return;
+    }
+
+    setUpgrading(planId);
+    try {
+      const response = await axiosInstance.post(API_PATHS.PAYMENT.CREATE_ORDER, {
+        plan: planId,
+      });
+
+      const { paymentSessionId } = response.data;
+
+      cashfree.checkout({
+        paymentSessionId: paymentSessionId,
+        redirectTarget: "_self",
+      });
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to start payment.";
+      toast.error(msg);
+      setUpgrading(null);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -369,7 +410,7 @@ const ProfilePage = () => {
                   backgroundColor: "var(--color-signal-orange)",
                   color: "#fff",
                 }}
-                onClick={() => navigate("/")}
+                onClick={() => setShowUpgradeModal(true)}
               >
                 <LuZap size={12} />
                 Upgrade
@@ -1017,6 +1058,153 @@ const ProfilePage = () => {
           )}
         </div>
       </div>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+          onClick={() => { setShowUpgradeModal(false); setUpgrading(null); }}
+        >
+          <div
+            className="w-full max-w-[520px] p-6"
+            style={{
+              backgroundColor: "var(--color-cream-lifted)",
+              borderRadius: "24px",
+              border: "1px solid var(--color-dust)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "var(--color-signal-orange)" }} />
+                  <span className="text-[11px] font-semibold uppercase" style={{ color: "var(--color-signal-orange)", letterSpacing: "0.06em" }}>
+                    Upgrade Plan
+                  </span>
+                </div>
+                <h3 className="text-lg font-medium" style={{ color: "var(--color-ink)", letterSpacing: "-0.01em" }}>
+                  Choose a paid plan
+                </h3>
+              </div>
+              <button
+                onClick={() => { setShowUpgradeModal(false); setUpgrading(null); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer"
+                style={{ backgroundColor: "var(--color-cream)", color: "var(--color-slate)" }}
+              >
+                <LuX size={14} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Pro Plan */}
+              <div
+                className="relative flex flex-col p-5"
+                style={{
+                  borderRadius: "24px",
+                  border: "2px solid var(--color-signal-orange)",
+                  backgroundColor: "var(--color-cream-lifted)",
+                }}
+              >
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 text-[10px] font-semibold uppercase rounded-full" style={{ backgroundColor: "var(--color-signal-orange)", color: "#fff", letterSpacing: "0.06em" }}>
+                  Popular
+                </div>
+                <div className="mb-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <LuZap size={14} style={{ color: "var(--color-signal-orange)" }} />
+                    <span className="text-[13px] font-semibold" style={{ color: "var(--color-ink)" }}>Pro</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-xl font-bold" style={{ color: "var(--color-signal-orange)", letterSpacing: "-0.03em" }}>₹299</span>
+                    <span className="text-[11px]" style={{ color: "var(--color-slate)" }}>/month</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5 mb-4 flex-1">
+                  {["Unlimited resumes", "All templates", "AI suggestions", "Resume analyzer"].map((f) => (
+                    <div key={f} className="flex items-center gap-1.5">
+                      <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ backgroundColor: "#DCFCE7", color: "#16A34A" }}>
+                        <LuCheck size={7} />
+                      </div>
+                      <span className="text-[11px]" style={{ color: "var(--color-ink)", fontWeight: 450 }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="w-full text-[12px] font-medium rounded-xl cursor-pointer transition-all duration-200 flex items-center justify-center gap-1.5"
+                  style={{
+                    backgroundColor: "var(--color-signal-orange)",
+                    color: "#fff",
+                    border: "1.5px solid var(--color-signal-orange)",
+                    padding: "9px 20px",
+                    opacity: upgrading && upgrading !== "pro" ? 0.5 : 1,
+                  }}
+                  disabled={!!upgrading}
+                  onClick={() => handleUpgrade("pro")}
+                >
+                  {upgrading === "pro" ? (
+                    <><LuLoader size={12} className="animate-spin" /> Processing...</>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </button>
+              </div>
+
+              {/* Max Plan */}
+              <div
+                className="relative flex flex-col p-5"
+                style={{
+                  borderRadius: "24px",
+                  border: "1.5px solid var(--color-dust)",
+                  backgroundColor: "var(--color-cream-lifted)",
+                }}
+              >
+                <div className="mb-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <LuCrown size={14} style={{ color: "var(--color-ink)" }} />
+                    <span className="text-[13px] font-semibold" style={{ color: "var(--color-ink)" }}>Max</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-xl font-bold" style={{ color: "var(--color-ink)", letterSpacing: "-0.03em" }}>₹599</span>
+                    <span className="text-[11px]" style={{ color: "var(--color-slate)" }}>/month</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5 mb-4 flex-1">
+                  {["Everything in Pro", "Custom branding", "Priority support", "Early access"].map((f) => (
+                    <div key={f} className="flex items-center gap-1.5">
+                      <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ backgroundColor: "#DCFCE7", color: "#16A34A" }}>
+                        <LuCheck size={7} />
+                      </div>
+                      <span className="text-[11px]" style={{ color: "var(--color-ink)", fontWeight: 450 }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="w-full text-[12px] font-medium rounded-xl cursor-pointer transition-all duration-200 flex items-center justify-center gap-1.5"
+                  style={{
+                    backgroundColor: "var(--color-ink)",
+                    color: "var(--color-cream)",
+                    border: "1.5px solid var(--color-ink)",
+                    padding: "9px 20px",
+                    opacity: upgrading && upgrading !== "max" ? 0.5 : 1,
+                  }}
+                  disabled={!!upgrading}
+                  onClick={() => handleUpgrade("max")}
+                >
+                  {upgrading === "max" ? (
+                    <><LuLoader size={12} className="animate-spin" /> Processing...</>
+                  ) : (
+                    "Subscribe"
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <p className="text-center text-[11px] mt-4" style={{ color: "var(--color-slate)" }}>
+              Secure payments powered by Cashfree
+            </p>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };
