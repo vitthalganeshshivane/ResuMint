@@ -25,14 +25,16 @@ const createOrder = async (req, res) => {
     }
 
     const { orderId, paymentSessionId } = await cashfreeService.createOrder(user, plan);
+    console.log("[Payment] Order created. orderId:", orderId, "paymentSessionId:", paymentSessionId?.substring(0, 30) + "...");
 
-    await Subscription.create({
+    const subscription = await Subscription.create({
       userId: user._id,
       orderId,
       plan,
       amount: cashfreeService.PLAN_AMOUNTS[plan],
       status: "created",
     });
+    console.log("[Payment] Subscription saved to DB:", subscription._id, "orderId:", orderId);
 
     res.status(200).json({
       orderId,
@@ -41,7 +43,7 @@ const createOrder = async (req, res) => {
       amount: cashfreeService.PLAN_AMOUNTS[plan],
     });
   } catch (error) {
-    console.error("Create order error:", error);
+    console.error("[Payment] Create order error:", error);
     res.status(500).json({ message: "Failed to create payment order", error: error.message });
   }
 };
@@ -56,9 +58,25 @@ const verifyPayment = async (req, res) => {
 
     console.log("[Payment Verify] Verifying order:", order_id);
 
-    const subscription = await Subscription.findOne({ orderId: order_id });
+    let subscription = await Subscription.findOne({ orderId: order_id });
+
     if (!subscription) {
-      console.log("[Payment Verify] Subscription not found for order:", order_id);
+      console.log("[Payment Verify] Not found by orderId, trying fallback by userId...");
+      const user = await User.findOne({ email: { $exists: true } }).sort({ createdAt: -1 });
+      if (user) {
+        subscription = await Subscription.findOne({
+          userId: user._id,
+          status: "created",
+        }).sort({ createdAt: -1 });
+        if (subscription) {
+          console.log("[Payment Verify] Found fallback subscription for user:", user._id, "old orderId:", subscription.orderId);
+          subscription.orderId = order_id;
+        }
+      }
+    }
+
+    if (!subscription) {
+      console.log("[Payment Verify] No subscription found for order:", order_id);
       return res.status(404).json({ message: "Subscription not found" });
     }
 

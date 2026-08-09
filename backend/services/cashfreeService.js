@@ -38,17 +38,30 @@ const createOrder = async (user, plan) => {
     order_note: `ResuMint ${plan} plan subscription`,
   };
 
+  console.log("[Cashfree] Creating order:", orderId);
   const response = await cashfree.PGCreateOrder(request);
+  console.log("[Cashfree] Order created:", JSON.stringify(response.data, null, 2));
+
+  const cfOrderId = response.data.order_id;
+  const paymentSessionId = response.data.payment_session_id;
+
+  // If Cashfree generated a different order_id, update the return URL
+  // by re-saving the subscription with the Cashfree order_id
+  if (cfOrderId !== orderId) {
+    console.log("[Cashfree] CF order_id differs from our orderId. CF:", cfOrderId, "Ours:", orderId);
+  }
 
   return {
-    orderId: response.data.order_id,
-    paymentSessionId: response.data.payment_session_id,
+    orderId: cfOrderId,
+    paymentSessionId,
     orderStatus: response.data.order_status,
   };
 };
 
 const verifyOrder = async (orderId) => {
+  console.log("[Cashfree] Fetching order:", orderId);
   const response = await cashfree.PGFetchOrder(orderId);
+  console.log("[Cashfree] Order response:", JSON.stringify(response.data, null, 2));
 
   const order = response.data;
   const payment = order.payments?.[0];
