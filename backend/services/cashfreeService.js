@@ -1,9 +1,9 @@
-const { Cashfree } = require("cashfree-pg");
+const { Cashfree, CFEnvironment } = require("cashfree-pg");
 
 const cashfree = new Cashfree(
   process.env.CASHFREE_ENVIRONMENT === "production"
-    ? Cashfree.PRODUCTION
-    : Cashfree.SANDBOX,
+    ? CFEnvironment.PRODUCTION
+    : CFEnvironment.SANDBOX,
   process.env.CASHFREE_APP_ID,
   process.env.CASHFREE_SECRET_KEY,
 );
@@ -50,12 +50,15 @@ const createOrder = async (user, plan) => {
 const verifyOrder = async (orderId) => {
   const response = await cashfree.PGFetchOrder(orderId);
 
+  const order = response.data;
+  const payment = order.payments?.[0];
+
   return {
-    orderId: response.data.order_id,
-    orderStatus: response.data.order_status,
-    orderAmount: response.data.order_amount,
-    paymentMethod: response.data.payments?.[0]?.payment_method || null,
-    paymentStatus: response.data.payments?.[0]?.payment_status || null,
+    orderId: order.order_id,
+    orderStatus: order.order_status,
+    orderAmount: order.order_amount,
+    paymentMethod: payment?.payment_method || null,
+    paymentStatus: payment?.payment_status || null,
   };
 };
 

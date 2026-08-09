@@ -319,9 +319,9 @@ const ProfilePage = () => {
         <div
           className="p-5 mb-5"
           style={{
-            backgroundColor: user?.plan === "max" ? "var(--color-ink)" : user?.plan === "pro" ? "var(--color-cream-lifted)" : "var(--color-cream-lifted)",
+            backgroundColor: user?.plan === "max" ? "#141413" : "var(--color-cream-lifted)",
             borderRadius: "24px",
-            border: user?.plan === "max" ? "2px solid var(--color-ink)" : user?.plan === "pro" ? "2px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
+            border: user?.plan === "max" ? "2px solid #141413" : user?.plan === "pro" ? "2px solid var(--color-signal-orange)" : "1px solid var(--color-dust)",
           }}
         >
           <div className="flex items-center justify-between">
@@ -330,7 +330,7 @@ const ProfilePage = () => {
                 className="w-10 h-10 flex items-center justify-center rounded-full"
                 style={{
                   backgroundColor: user?.plan === "max" ? "var(--color-signal-orange)" : user?.plan === "pro" ? "#FEF3C7" : "var(--color-cream)",
-                  color: user?.plan === "max" ? "var(--color-cream)" : user?.plan === "pro" ? "var(--color-signal-orange)" : "var(--color-slate)",
+                  color: user?.plan === "max" ? "#fff" : user?.plan === "pro" ? "var(--color-signal-orange)" : "var(--color-slate)",
                 }}
               >
                 {user?.plan === "max" ? <LuCrown size={18} /> : user?.plan === "pro" ? <LuZap size={18} /> : <LuCheck size={18} />}
@@ -339,7 +339,7 @@ const ProfilePage = () => {
                 <div className="flex items-center gap-2">
                   <span
                     className="text-[14px] font-semibold"
-                    style={{ color: user?.plan === "max" ? "var(--color-cream)" : "var(--color-ink)" }}
+                    style={{ color: user?.plan === "max" ? "#F3F0EE" : "var(--color-ink)" }}
                   >
                     {user?.plan === "max" ? "Max Plan" : user?.plan === "pro" ? "Pro Plan" : "Free Plan"}
                   </span>
@@ -347,7 +347,7 @@ const ProfilePage = () => {
                     className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
                     style={{
                       backgroundColor: user?.plan === "max" ? "var(--color-signal-orange)" : user?.plan === "pro" ? "#FEF3C7" : "var(--color-cream)",
-                      color: user?.plan === "max" ? "var(--color-cream)" : user?.plan === "pro" ? "#D97706" : "var(--color-slate)",
+                      color: user?.plan === "max" ? "#fff" : user?.plan === "pro" ? "#D97706" : "var(--color-slate)",
                       letterSpacing: "0.04em",
                     }}
                   >
@@ -367,7 +367,7 @@ const ProfilePage = () => {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-semibold cursor-pointer transition-all duration-200"
                 style={{
                   backgroundColor: "var(--color-signal-orange)",
-                  color: "var(--color-cream)",
+                  color: "#fff",
                 }}
                 onClick={() => navigate("/")}
               >
@@ -386,9 +386,9 @@ const ProfilePage = () => {
             </div>
           )}
           {user?.plan === "max" && (
-            <div className="flex flex-wrap gap-2 mt-3 pt-3" style={{ borderTop: "1px solid var(--color-dark-border)" }}>
+            <div className="flex flex-wrap gap-2 mt-3 pt-3" style={{ borderTop: "1px solid #333332" }}>
               {["Everything in Pro", "Custom branding", "Priority support", "Early access"].map((f) => (
-                <span key={f} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "var(--color-dark-surface-lifted)", color: "var(--color-cream)" }}>
+                <span key={f} className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: "#242423", color: "#E8E5E0" }}>
                   {f}
                 </span>
               ))}
