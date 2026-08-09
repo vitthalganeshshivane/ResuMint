@@ -991,7 +991,7 @@ const ProfilePage = () => {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl text-[13px] font-semibold cursor-pointer transition-all duration-200"
+          className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl text-[13px] font-semibold cursor-pointer transition-all duration-200 mb-5"
           style={{
             backgroundColor: "var(--color-cream-lifted)",
             color: "var(--color-ink)",
